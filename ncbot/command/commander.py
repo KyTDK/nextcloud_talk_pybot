@@ -1,6 +1,6 @@
 from ncbot.nc_helper import NCHelper
 from ncbot.nc_chat import NCChat
-from ncbot.plugins.openai.chat as openai
+from ncbot.plugins.openai.chat import chat3
 import os
 import importlib.util
 
@@ -30,7 +30,7 @@ def get_plugin_desc(plname):
     return desc
 
 def dispatch(chat: NCChat):
-    chat.response = openai.chat3(chat.user_id, chat.user_name, chat.chat_message)
+    chat.response = chat3(chat.user_id, chat.user_name, chat.chat_message)
 
 def register(plname, funcname, desc, func, remember_command):
     if plname in current_command:
