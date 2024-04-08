@@ -52,5 +52,5 @@ def skip_self_unread(chat: NCChat):
 
 
 def send_response(chat: NCChat):
-    if nc_agent.send_message(chat.conversation_token, chat.chat_id, chat.response+" "+chat.chat_type, chat.chat_message,chat.user_id, False):
+    if nc_agent.send_message(chat.conversation_token, chat.chat_id, chat.response, chat.chat_message,chat.user_id, False):
         nc_agent.mark_chat_read(chat.conversation_token, chat.chat_id)
