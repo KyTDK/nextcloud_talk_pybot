@@ -49,7 +49,7 @@ def chat3(userid, username, input):
      ]
 
 
-    agent = create_react_agent(prompt=prompt, tools=tools)
+    agent = create_react_agent(llm=llm_gpt3, prompt=prompt, tools=tools)
 
     agent_chain = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=False, memory=history, handle_parsing_errors=True)
 
