@@ -37,7 +37,7 @@ def chat3(userid, username, input):
         Tool(
             name = "Search",
             func=DuckDuckGoSearchAPIWrapper.run,
-            description="useful for when you need to answer questions about current events. You should ask targeted questions"
+            description="useful for when you need to answer questions about current events or are unsure on how to answer a question. You should ask targeted questions"
         ),
      ]
 
