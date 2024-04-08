@@ -30,18 +30,7 @@ def get_plugin_desc(plname):
     return desc
 
 def dispatch(chat: NCChat):
-    ret = 'test'
-    #nc_agent.lock_conversation(chat.conversation_token)
-    if command.matched_func:
-        ret = openai.chat3(chat.user_id, chat.user_name, chat.chat_message)
-        save_last_command(chat, command)
-    elif command.matched_plugin:
-        ret = get_plugin_desc(command.plname)
-    else:
-        ret = get_default_desc()
-    #nc_agent.unlock_conversation(chat.conversation_token)
-    chat.response = ret
-
+    chat.response = openai.chat3(chat.user_id, chat.user_name, chat.chat_message)
 
 def register(plname, funcname, desc, func, remember_command):
     if plname in current_command:
