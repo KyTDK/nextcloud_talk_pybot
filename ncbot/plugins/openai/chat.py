@@ -1,10 +1,7 @@
 import ncbot.command.base as base
 
-import json
 import requests
 
-from langchain_core.utils.function_calling import convert_to_openai_tool
-from ncbot.log_config import logger
 from ncbot.plugins.utils.history import get_instance
 
 from langchain.chat_models import ChatOpenAI
