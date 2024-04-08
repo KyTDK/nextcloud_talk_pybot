@@ -2,6 +2,7 @@ from ncbot.nc_helper import NCHelper
 from ncbot.nc_chat import NCChat
 import os
 import importlib.util
+import traceback
 
 nc_agent = NCHelper()
 
@@ -46,7 +47,10 @@ class Command:
         try:
             return self.func(self.user_id, self.user_name, self.value)
         except Exception as e:
-            return 'Something wrong happened! Please try again later.'
+            # Use traceback.format_exc() to get the stack trace as a string
+            stack_trace = traceback.format_exc()
+            # Return a more informative message with the stack trace
+            return f"An error occurred: {str(e)}\nStack Trace:\n{stack_trace}"
 
 
 def get_default_desc():
