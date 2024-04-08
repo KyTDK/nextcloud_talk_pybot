@@ -55,7 +55,7 @@ class NCHelper:
             data['message'] = comment
             data['replyTo'] = chatid
         else:
-            data['message'] = f'Reponse to "{message}" is:\n\n' + comment
+            data['message'] = comment
         data['message'] = f'@"{user_id}" \n'+data['message']
         response = rutil.post_response(self.final_url_v1(f'/chat/{token}'), data)
         return response != None
