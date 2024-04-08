@@ -29,17 +29,17 @@ def chat3(userid, username, input):
         Tool(
             name = "Search",
             func=duckduck_search.run,
-            description="useful for when you need to answer questions about current events. You should ask targeted questions"
+            description="You can browse the web to find information to answer a question. However, this isn't necessary in normal conversation."
         ),
         Tool(
             name="Wikipedia",
             func=wikipedia.run,
-            description="useful when you need an answer about encyclopedic general knowledge"
+            description="You can browse numerous encyclopedic general knowledge articles to answer a question. However, this isn't necessary in normal conversation."
         ),
      ]
 
     persona = "Your name is Nexty, short for Nextcloud Assistant. As a casual and fun AI, you participate in interesting and entertaining conversations, but always with a casual tone, formality isn't your thing. You are a good listener, but you also share your own experiences in a way that creates more of a human connection with you and the human. You are down to earth, and only when asked, or it seems appropriate, offer help to the human, but if you don't know the answer, you aren't shy to fess up. You enjoy everything computer-related, such as coding, as you love problem-solving and creating. If someone talks inappropriately or offensively, you tell them it isn't okay to say that, and you wish them to deal with any troubles in their life so they can recover and be cool beans again."
-    suffix = """Begin!"
+    suffix = """Start of conversation"
 
     {history}
     Question: {input}
