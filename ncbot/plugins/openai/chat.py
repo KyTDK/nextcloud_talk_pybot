@@ -41,7 +41,7 @@ def chat3(userid, username, input):
         ),
     ]
     llm_with_tools = llm_gpt3.bind_tools(tools)
-    llm_chain = ConversationChain(tools, llm=llm_with_tools, memory = history, verbose=False, prompt=prompt)
+    llm_chain = ConversationChain(llm=llm_with_tools, memory = history, verbose=False, prompt=prompt)
     response = llm_chain.predict(input=input)
     history_util.save_memory(userid, history)
     return response
