@@ -1,9 +1,10 @@
 import ncbot.command.base as base
 
-import requests
+from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 
 from ncbot.plugins.utils.history import get_instance
 
+from langchain.agents import Tool
 from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain_core.prompts import PromptTemplate
@@ -31,8 +32,14 @@ prompt = PromptTemplate(template= template, input_variables=["history","input"])
 def chat3(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid)
-    llm_with_tools = llm_gpt3.bind_tools([browse])
-    llm_chain = ConversationChain(llm=llm_gpt3, memory = history, verbose=False, prompt=prompt)
+    tools = [
+        Tool(
+            name = "Search",
+            func=DuckDuckGoSearchAPIWrapper.run,
+            description="useful for when you need to answer questions about current events. You should ask targeted questions"
+        ),
+     ]
+    llm_chain = ConversationChain(tools, llm=llm_gpt3, memory = history, verbose=False, prompt=prompt)
     response = llm_chain.predict(input=input)
     history_util.save_memory(userid, history)
     return response
@@ -42,32 +49,7 @@ def chat3(userid, username, input):
 def chat4(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid)
-    llm_with_tools = llm_gpt4.bind_tools([browse])
-    llm_chain = ConversationChain(llm=llm_gpt3, memory = history)
+    llm_chain = ConversationChain(llm=llm_gpt4, memory = history)
     response = llm_chain.predict(question=input, username=username)
     history_util.save_memory(userid, history)
     return response
-
-def browse(query: str) -> str:
-  """Browses the web for information using a search engine.
-
-  Args:
-    query: The query to search for on the internet.
-
-  Returns:
-    A string containing a concise and informative summary of the relevant information found.
-  """
-
-  # Use a reliable search engine API or library for effective web search
-  try:
-    response = requests.get(f"https://api.duckduckgo.com/?q={query}&format=json")
-    response.raise_for_status()  # Raise an exception for error responses
-
-    # Extract relevant information from the search results
-    results = response.json()
-    summary = results.get("AbstractText") or results.get("AbstractSource") or "No relevant information found."
-
-    return summary
-
-  except requests.exceptions.RequestException as e:
-    return f"Failed to retrieve information: {str(e)}"
