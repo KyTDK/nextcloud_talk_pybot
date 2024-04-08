@@ -30,8 +30,8 @@ prompt = PromptTemplate(template= template, input_variables=["history","input"])
 def chat3(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid)
-    llm_gpt3.bind_tools([browse])
-    llm_chain = ConversationChain(llm=llm_gpt3, memory = history, verbose=False, prompt=prompt)
+    llm_with_tools = llm_gpt3.bind_tools([browse])
+    llm_chain = ConversationChain(llm=llm_with_tools, memory = history, verbose=False, prompt=prompt)
     response = llm_chain.predict(input=input)
     history_util.save_memory(userid, history)
     return response
@@ -41,8 +41,8 @@ def chat3(userid, username, input):
 def chat4(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid)
-    llm_gpt4.bind_tools([browse])
-    llm_chain = ConversationChain(llm=llm_gpt4, memory = history)
+    llm_with_tools = llm_gpt4.bind_tools([browse])
+    llm_chain = ConversationChain(llm=llm_with_tools, memory = history)
     response = llm_chain.predict(question=input, username=username)
     history_util.save_memory(userid, history)
     return response
