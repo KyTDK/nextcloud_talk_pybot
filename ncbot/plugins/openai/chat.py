@@ -21,10 +21,11 @@ llm_gpt4 = ChatOpenAI(temperature=0.5, model=model_gpt_4)
 def chat3(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid)
+    duckduck_search = DuckDuckGoSearchAPIWrapper()
     tools = [
         Tool(
             name = "Search",
-            func=DuckDuckGoSearchAPIWrapper.run,
+            func=duckduck_search.run,
             description="useful for when you need to answer questions about current events or are unsure on how to answer a question. You should ask targeted questions"
         ),
      ]
