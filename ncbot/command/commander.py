@@ -44,8 +44,8 @@ class Command:
 
     def execute(self):
         try:
-            return self.func(self.user_id, self.user_name, self.value)
-            print(self.value)
+            #return self.func(self.user_id, self.user_name, self.value)
+            return self.value
         except Exception as e:
             return 'Something wrong happened! Please try again later.'
 
