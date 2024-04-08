@@ -5,7 +5,8 @@ import requests
 from ncbot.plugins.utils.history import get_instance
 
 from langchain_openai import ChatOpenAI
-from langchain import PromptTemplate, ConversationChain
+from langchain.chains import ConversationChain
+from langchain_core.prompts import PromptTemplate
 
 plugin_name = 'openai'
 model_gpt_4 = 'gpt-4'
