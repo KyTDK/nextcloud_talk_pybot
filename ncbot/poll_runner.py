@@ -52,7 +52,7 @@ def skip_self_unread(chat: NCChat):
 
 
 def send_response(chat: NCChat):
-    if nc_agent.send_message(chat.conversation_token, chat.chat_id, chat.response, chat.chat_message,chat.user_id, chat.chat_type == ncconstants.chat_type_user):
+    if nc_agent.send_message(chat.conversation_token, chat.chat_id, chat.response, chat.chat_message, None, chat.chat_type == ncconstants.chat_type_user):
         nc_agent.mark_chat_read(chat.conversation_token, chat.chat_id)
 
 
