@@ -45,7 +45,7 @@ def chat3(userid, username, input):
 
     llm_chain = LLMChain(llm=llm_gpt3, prompt=prompt)
     agent = ZeroShotAgent(llm_chain=llm_chain, tools=tools, verbose=False)
-    agent_chain = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=False, memory=history)
+    agent_chain = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=False, memory=history, handle_parsing_errors=True)
 
     response = agent_chain.run(input=input)
 
