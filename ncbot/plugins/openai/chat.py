@@ -1,6 +1,5 @@
 import ncbot.command.base as base
 
-from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 
 from ncbot.plugins.utils.history import get_instance
 
@@ -8,6 +7,8 @@ from langchain.agents import Tool
 from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain_core.prompts import PromptTemplate
+from langchain_core.utils.function_calling import convert_to_openai_function
+from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 
 plugin_name = 'openai'
 model_gpt_4 = 'gpt-4'
@@ -38,8 +39,9 @@ def chat3(userid, username, input):
             func=DuckDuckGoSearchAPIWrapper.run,
             description="useful for when you need to answer questions about current events. You should ask targeted questions"
         ),
-     ]
-    llm_chain = ConversationChain(tools, llm=llm_gpt3, memory = history, verbose=False, prompt=prompt)
+    ]
+    llm_with_tools = llm_gpt3.bind_tools(tools)
+    llm_chain = ConversationChain(tools, llm=llm_with_tools, memory = history, verbose=False, prompt=prompt)
     response = llm_chain.predict(input=input)
     history_util.save_memory(userid, history)
     return response
