@@ -5,8 +5,7 @@ from ncbot.plugins.utils.history import get_instance
 
 from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationChain
-from langchain_core.prompts import PromptTemplate
-from langchain.agents import Tool, AgentExecutor, ZeroShotAgent
+from langchain.agents import Tool, AgentExecutor, ZeroShotAgent, create_react_agent
 from langchain import LLMChain
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
@@ -44,7 +43,7 @@ def chat3(userid, username, input):
     {history}
     Question: {input}
     {agent_scratchpad}"""
-    prompt = ZeroShotAgent.create_prompt(
+    prompt = create_react_agent(
     tools,
     prefix=persona,
     suffix=suffix,
@@ -55,7 +54,7 @@ def chat3(userid, username, input):
     agent = ZeroShotAgent(llm_chain=llm_chain, tools=tools, verbose=False)
     agent_chain = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=False, memory=history, handle_parsing_errors=True)
 
-    response = agent_chain.run(input=input)
+    response = agent_chain.invoke(input=input)
 
     history_util.save_memory(userid, history)
     return response
