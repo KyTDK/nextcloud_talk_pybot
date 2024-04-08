@@ -91,8 +91,7 @@ def dispatch(chat: NCChat):
     command = Command(chat)
     if command.matched_func:
         ret = command.execute()
-        if save_last_command(chat, command):
-            ret += f'\n\n(The command !${command.plname}:{command.funcname} is remembered, type without command to continue use this function. Otherwize type other commands.)'
+        save_last_command(chat, command)
     elif command.matched_plugin:
         ret = get_plugin_desc(command.plname)
     else:
@@ -118,6 +117,3 @@ def load_plugin(path):
                 spec.loader.exec_module(module)
         elif os.path.isdir(tmppath):
             load_plugin(tmppath)
-
-
-
