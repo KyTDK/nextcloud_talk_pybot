@@ -49,7 +49,7 @@ def chat3(userid, username, input):
      ]
 
 
-    agent = create_react_agent(prompt, tools, input_variables=["input", "history", "agent_scratchpad"])
+    agent = create_react_agent(prompt, tools)
 
     agent_chain = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=False, memory=history, handle_parsing_errors=True)
 
