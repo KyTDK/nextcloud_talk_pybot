@@ -1,6 +1,9 @@
 import ncbot.command.base as base
 
-import openai
+import json
+import requests
+
+from langchain_core.utils.function_calling import convert_to_openai_tool
 from ncbot.log_config import logger
 from ncbot.plugins.utils.history import get_instance
 
@@ -30,6 +33,7 @@ prompt = PromptTemplate(template= template, input_variables=["history","input"])
 def chat3(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid)
+    llm_gpt3.bind_tools([browse])
     llm_chain = ConversationChain(llm=llm_gpt3, memory = history, verbose=False, prompt=prompt)
     response = llm_chain.predict(input=input)
     history_util.save_memory(userid, history)
@@ -40,7 +44,32 @@ def chat3(userid, username, input):
 def chat4(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid)
+    llm_gpt4.bind_tools([browse])
     llm_chain = ConversationChain(llm=llm_gpt4, memory = history)
     response = llm_chain.predict(question=input, username=username)
     history_util.save_memory(userid, history)
     return response
+
+def browse(query: str) -> str:
+  """Browses the web for information using a search engine.
+
+  Args:
+    query: The query to search for on the internet.
+
+  Returns:
+    A string containing a concise and informative summary of the relevant information found.
+  """
+
+  # Use a reliable search engine API or library for effective web search
+  try:
+    response = requests.get(f"https://api.duckduckgo.com/?q={query}&format=json")
+    response.raise_for_status()  # Raise an exception for error responses
+
+    # Extract relevant information from the search results
+    results = response.json()
+    summary = results.get("AbstractText") or results.get("AbstractSource") or "No relevant information found."
+
+    return summary
+
+  except requests.exceptions.RequestException as e:
+    return f"Failed to retrieve information: {str(e)}"
