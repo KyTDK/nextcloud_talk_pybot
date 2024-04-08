@@ -92,7 +92,7 @@ def dispatch(chat: NCChat):
     command = Command(chat)
     if command.matched_func:
         ret = command.execute()
-    save_last_command(chat, command)
+        save_last_command(chat, command)
     elif command.matched_plugin:
         ret = get_plugin_desc(command.plname)
     else:
