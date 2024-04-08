@@ -16,10 +16,10 @@ class Command:
 
     def __init__(self, chat: NCChat):
         commandstr:str = chat.chat_message
-        self.matched_func = False
-        self.matched_plugin = False
-        self.plname = None
-        self.funcname = None
+        self.matched_func = True
+        self.matched_plugin = True
+        self.plname = "openai"
+        self.funcname = "chat3"
         self.value = None
         self.user_id = chat.user_id
         self.user_name = chat.user_name
