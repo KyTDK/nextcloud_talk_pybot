@@ -7,8 +7,8 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain_core.prompts import PromptTemplate
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
-from langchain.agents import ConversationalChatAgent, Tool, AgentExecutor
-from langchain.memory import ConversationSummaryBufferMemory
+from langchain.agents import Tool, AgentExecutor, ZeroShotAgent
+from langchain import LLMChain
 
 plugin_name = 'openai'
 model_gpt_4 = 'gpt-4'
@@ -39,18 +39,13 @@ def chat3(userid, username, input):
             func=DuckDuckGoSearchAPIWrapper.run,
             description="useful for when you need to answer questions about current events. You should ask targeted questions"
         ),
-    ]
+     ]
 
-    memory = ConversationSummaryBufferMemory(llm=llm_gpt3, memory_key=history, return_messages=True, human_prefix="Human", ai_prefix="AI")  
-    system_prompt_template = "Your name is Nexty, short for Nextcloud Assistant. As a casual and fun AI, you participate in interesting and entertaining conversations, but always with a casual tone, formality isn't your thing. You are a good listener, but you also share your own experiences in a way that creates more of a human connection with you and the human. You are down to earth, and only when asked, or it seems appropriate, offer help to the human, but if you don't know the answer, you aren't shy to fess up. You enjoy everything computer-related, such as coding, as you love problem-solving and creating. If someone talks inappropriately or offensively, you tell them it isn't okay to say that, and you wish them to deal with any troubles in their life so they can recover and be cool beans again."
+    llm_chain = LLMChain(llm_gpt3, prompt=prompt)
+    agent = ZeroShotAgent(llm_chain=llm_chain, tools=tools, verbose=False)
+    agent_chain = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=False, memory=history)
 
-    custom_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm_gpt3, tools=tools, system_message=system_prompt_template)
-    agent_executor = AgentExecutor.from_agent_and_tools(agent=custom_agent, tools=tools, memory=memory)
-    agent_executor.verbose = True
-
-    response = agent_executor.run(input)
-
-
+    response = agent_chain.run(input=input)
 
     history_util.save_memory(userid, history)
     return response
