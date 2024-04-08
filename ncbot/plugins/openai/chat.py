@@ -6,9 +6,11 @@ from ncbot.plugins.utils.history import get_instance
 from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain_core.prompts import PromptTemplate
-from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 from langchain.agents import Tool, AgentExecutor, ZeroShotAgent
 from langchain import LLMChain
+
+from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
+from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 
 plugin_name = 'openai'
 model_gpt_4 = 'gpt-4'
@@ -22,11 +24,17 @@ def chat3(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid)
     duckduck_search = DuckDuckGoSearchAPIWrapper()
+    wikipedia = WikipediaAPIWrapper()
     tools = [
         Tool(
             name = "Search",
             func=duckduck_search.run,
-            description="useful for when you need to answer questions about current events or are unsure on how to answer a question. You should ask targeted questions"
+            description="useful for when you need to answer questions about current events. You should ask targeted questions"
+        ),
+        Tool(
+            name="Wikipedia",
+            func=wikipedia.run,
+            description="useful when you need an answer about encyclopedic general knowledge"
         ),
      ]
 
