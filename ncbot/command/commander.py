@@ -16,10 +16,10 @@ class Command:
 
     def __init__(self, chat: NCChat):
         commandstr:str = chat.chat_message
-        self.matched_func = True
-        self.matched_plugin = True
-        self.plname = "openai"
-        self.funcname = "chat3"
+        self.matched_func = False
+        self.matched_plugin = False
+        self.plname = None
+        self.funcname = None
         self.value = None
         self.user_id = chat.user_id
         self.user_name = chat.user_name
@@ -44,8 +44,7 @@ class Command:
 
     def execute(self):
         try:
-            #return self.func(self.user_id, self.user_name, self.value)
-            return self.value
+            return self.func(self.user_id, self.user_name, self.value)
         except Exception as e:
             return 'Something wrong happened! Please try again later.'
 
@@ -73,6 +72,9 @@ def find_last_command(chat: NCChat):
         key = f'command_{chat.user_id}'
         if key in user_command_cache:
             command = user_command_cache[key]
+            chat.chat_message = f'{command} {chat.chat_message}'
+        else:
+            command = "!openai:chat3" #default to gpt3
             chat.chat_message = f'{command} {chat.chat_message}'
 
 
