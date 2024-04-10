@@ -45,5 +45,5 @@ def chat3(userid, username, input):
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = agent_executor.invoke({"input": input, "history": []}, return_only_outputs=True)
     history_util.save_memory(userid, history)
-    return str(response)
+    return response['output']
     
