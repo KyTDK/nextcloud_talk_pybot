@@ -37,7 +37,7 @@ class MemoryHistoryUtil():
         memory_dict = self.__dict_to_message(dict)
         history = ChatMessageHistory()
         history.messages = history.messages + memory_dict
-        return ConversationBufferMemory(chat_memory=history)
+        return ConversationBufferMemory(return_messages=True, chat_memory=history)
 
 
     def save_memory(self, userid, history: ConversationBufferMemory):
