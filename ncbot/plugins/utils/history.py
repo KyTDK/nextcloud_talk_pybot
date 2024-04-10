@@ -28,18 +28,15 @@ class MemoryHistoryUtil():
     @abstractmethod
     def clear_memory(self, userid):
         pass
-
-
+        
     def get_memory(self, userid):
         dict = self._get_from_memory(userid)
-        if dict == None or len(dict) == 0:
-            memory = ConversationBufferMemory(return_messages=True)
-            memory.save_context({"input": "hi"}, {"output": "whats up"})
-            return memory
+        if dict is None or not dict:  # Check for None and empty dictionary
+            return ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=[]))
         memory_dict = self.__dict_to_message(dict)
         history = ChatMessageHistory()
         history.messages = history.messages + memory_dict
-        return ConversationBufferMemory(chat_memory=history)
+        return ConversationBufferMemory(return_messages=True, chat_memory=history)
 
 
     def save_memory(self, userid, history: ConversationBufferMemory):
