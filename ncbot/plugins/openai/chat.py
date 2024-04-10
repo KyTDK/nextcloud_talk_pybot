@@ -43,7 +43,7 @@ def chat3(userid, username, input):
     agent = create_openai_tools_agent(llm, tools, prompt)
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    response = agent_executor.invoke({"input": input, "history": history})
+    response = agent_executor.invoke({"input": input, "history": history.abuffer_as_messages()})
     history_util.save_memory(userid, history)
     return response['output']
     
