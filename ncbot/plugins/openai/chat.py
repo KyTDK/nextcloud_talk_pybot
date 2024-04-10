@@ -5,7 +5,7 @@ from ncbot.log_config import logger
 from ncbot.plugins.utils.history import get_instance
 
 from langchain_openai import ChatOpenAI
-from langchain import PromptTemplate, ConversationChain
+from langchain import PromptTemplate
 from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_openai import ChatOpenAI
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
@@ -43,7 +43,7 @@ def chat3(userid, username, input):
     agent = create_openai_tools_agent(llm, tools, prompt)
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    response = agent_executor.invoke({"input": input, "history": history}, return_only_outputs=True)
+    response = agent_executor.invoke({"input": input, "history": history})
     history_util.save_memory(userid, history)
     return response['output']
     
