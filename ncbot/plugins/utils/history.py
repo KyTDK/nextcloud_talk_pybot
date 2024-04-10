@@ -33,7 +33,9 @@ class MemoryHistoryUtil():
     def get_memory(self, userid):
         dict = self._get_from_memory(userid)
         if dict == None or len(dict) == 0:
-            return ConversationBufferMemory(chat_memory=ChatMessageHistory(messages=[]))
+            memory = ConversationBufferMemory(return_messages=True)
+            memory.save_context({"input": "hi"}, {"output": "whats up"})
+            return memory
         memory_dict = self.__dict_to_message(dict)
         history = ChatMessageHistory()
         history.messages = history.messages + memory_dict
