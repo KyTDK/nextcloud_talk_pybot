@@ -8,7 +8,7 @@ from langchain_openai import ChatOpenAI
 from langchain import PromptTemplate
 from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_openai import ChatOpenAI
-from langchain_community.tools import DuckDuckGoSearchResults
+from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.callbacks.manager import get_openai_callback
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
@@ -25,7 +25,7 @@ def chat3(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid).load_memory_variables({})['history']
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
-    duckduck_search = DuckDuckGoSearchResults()
+    duckduck_search = DuckDuckGoSearchRun()
     tools = [
         Tool(
             name = "Search",
