@@ -90,7 +90,7 @@ def save_last_command(chat: NCChat, command: Command):
     return False
 
 
-def dispatch(chat: NCChat):
+async def dispatch(chat: NCChat):
     ret = 'test'
     #nc_agent.lock_conversation(chat.conversation_token)
 
