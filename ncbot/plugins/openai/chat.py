@@ -19,8 +19,6 @@ from langchain_community.tools.playwright.utils import (
 
 from datetime import datetime
 
-import nest_asyncio
-
 plugin_name = 'openai'
 model_gpt_4 = 'gpt-4'
 model_gpt_3 = 'gpt-3.5-turbo'
@@ -28,8 +26,7 @@ model_gpt_3 = 'gpt-3.5-turbo'
 llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 
 @base.command(plname=plugin_name, funcname='chat3',desc='Chat with Chatgpt using gpt-3.5-turbo model')
-async def chat3(userid, username, input):
-    nest_asyncio.apply()
+def chat3(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid).load_memory_variables({})['history']
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
@@ -63,7 +60,7 @@ async def chat3(userid, username, input):
     agent = create_openai_tools_agent(llm, tools, prompt)
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    response = await agent_executor.invoke({"input": input, "history": history}, verbose=True)
+    response = agent_executor.invoke({"input": input, "history": history}, verbose=True)
     new_history = ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     new_history.save_context({"input": input}, {"output": response['output']})
     history_util.save_memory(userid, new_history)
