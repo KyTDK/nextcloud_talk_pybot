@@ -44,7 +44,7 @@ def chat3(userid, username, input):
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     print(str(history))
-    response = agent_executor.invoke({"input": input, "history": history.load_memory_variables({})['history']})['output']
+    response = agent_executor.invoke({"input": input})['output']
     history_util.save_memory(userid, history)
     return response
     
