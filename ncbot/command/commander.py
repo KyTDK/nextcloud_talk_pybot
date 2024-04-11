@@ -3,6 +3,7 @@ from ncbot.nc_chat import NCChat
 import os
 import importlib.util
 import traceback
+import asyncio
 
 nc_agent = NCHelper()
 
@@ -97,7 +98,7 @@ def dispatch(chat: NCChat):
     find_last_command(chat)
     command = Command(chat)
     if command.matched_func:
-        ret = command.execute()
+        ret = asyncio.run(command.execute())
         save_last_command(chat, command)
     elif command.matched_plugin:
         ret = get_plugin_desc(command.plname)
