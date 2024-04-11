@@ -40,6 +40,7 @@ class MemoryHistoryUtil():
 
     def get_base_memory(self, userid):
         dict = self._get_from_memory(userid)
+        memory_dict = self.__dict_to_message(dict)
         return dict
 
     def save_memory(self, userid, history: ConversationBufferMemory):
