@@ -45,6 +45,7 @@ def chat3(userid, username, input):
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = agent_executor.invoke({"input": input, "history": history})['output']
     new_history = ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=history))
+    new_history.save_context({"input": input}, {"output": response})
     history_util.save_memory(userid, new_history)
     return response+" old history: "+str(history)+" new history: "+str(new_history)
     
