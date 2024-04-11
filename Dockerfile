@@ -7,6 +7,7 @@ RUN cd /app \
     && python -m pip install --upgrade pip \
     && python3 -m pip install --no-cache-dir -r /app/requirements.txt \
     && playwright install \
+    && playwright install-deps \
     && rm -rf /var/cache/* \
     && rm -rf /tmp/* 
 
