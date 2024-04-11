@@ -12,6 +12,7 @@ from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from langchain_community.callbacks.manager import get_openai_callback
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
+from datetime import datetime
 
 plugin_name = 'openai'
 model_gpt_4 = 'gpt-4'
@@ -30,7 +31,13 @@ def chat3(userid, username, input):
             name = "Search",
             func=duckduck_search.run,
             description="useful for when you need to answer questions about current events. You should ask targeted questions"
-        )]
+        ), 
+        Tool(
+            name = "Date and time",
+            func=datetime.now(),
+            description="get the current date and time, necessary if you need to answer a question regarding date or time"
+        )
+    ]
     # Get the prompt to use - you can modify this!
     prompt = ChatPromptTemplate.from_messages(
     [
