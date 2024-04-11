@@ -17,8 +17,6 @@ from langchain_community.tools.playwright.utils import (
     create_async_playwright_browser,  # A synchronous browser is available, though it isn't compatible with jupyter.\n",      },
 )
 
-import nest_asyncio
-
 from datetime import datetime
 
 plugin_name = 'openai'
