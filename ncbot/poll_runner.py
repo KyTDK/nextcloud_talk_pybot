@@ -7,8 +7,6 @@ from ncbot.log_config import logger
 import ncbot.config as ncconfig
 import ncbot.nc_constants as ncconstants
 
-import asyncio
-
 nc_agent = NCHelper()
 
 def start():
