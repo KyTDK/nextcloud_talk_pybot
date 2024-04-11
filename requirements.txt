@@ -12,3 +12,4 @@ duckduckgo-search
 wikipedia
 playwright
 lxml
+nest-asyncio
