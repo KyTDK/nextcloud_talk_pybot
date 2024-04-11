@@ -11,7 +11,7 @@ from langchain_openai import ChatOpenAI
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from langchain_community.callbacks.manager import get_openai_callback
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 
 plugin_name = 'openai'
 model_gpt_4 = 'gpt-4'
