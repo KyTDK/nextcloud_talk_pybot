@@ -10,3 +10,4 @@ redis==4.5.5
 langchain-openai
 duckduckgo-search
 wikipedia
+playwright
