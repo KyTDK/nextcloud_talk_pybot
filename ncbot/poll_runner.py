@@ -7,6 +7,8 @@ from ncbot.log_config import logger
 import ncbot.config as ncconfig
 import ncbot.nc_constants as ncconstants
 
+import asyncio
+
 nc_agent = NCHelper()
 
 def start():
@@ -39,7 +41,7 @@ def deal_unread_chats(unread_chats):
             skip_self_unread(chatC)
         else:
             try:
-                commander.dispatch(chatC)
+                asyncio.run(commander.dispatch(chatC))
                 send_response(chatC)
             except Exception as e:
                 traceback.print_exc()
