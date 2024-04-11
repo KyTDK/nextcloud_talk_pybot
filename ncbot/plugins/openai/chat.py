@@ -54,5 +54,5 @@ def chat3(userid, username, input):
     new_history = ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     new_history.save_context({"input": input}, {"output": response['output']})
     history_util.save_memory(userid, new_history)
-    return str(response)
+    return response['output']
     
