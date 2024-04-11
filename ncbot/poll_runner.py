@@ -41,7 +41,7 @@ def deal_unread_chats(unread_chats):
             skip_self_unread(chatC)
         else:
             try:
-                asyncio.run(commander.dispatch(chatC))
+                commander.dispatch(chatC)
                 send_response(chatC)
             except Exception as e:
                 traceback.print_exc()
