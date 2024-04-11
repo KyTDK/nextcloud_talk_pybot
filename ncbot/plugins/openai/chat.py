@@ -26,7 +26,7 @@ model_gpt_3 = 'gpt-3.5-turbo'
 llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 
 @base.command(plname=plugin_name, funcname='chat3',desc='Chat with Chatgpt using gpt-3.5-turbo model')
-async def chat3(userid, username, input):
+def chat3(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid).load_memory_variables({})['history']
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
