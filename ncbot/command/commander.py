@@ -3,6 +3,7 @@ from ncbot.nc_chat import NCChat
 import os
 import importlib.util
 import traceback
+import asyncio
 
 nc_agent = NCHelper()
 
