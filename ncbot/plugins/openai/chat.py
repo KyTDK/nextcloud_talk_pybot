@@ -14,7 +14,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 from langchain_community.agent_toolkits import PlayWrightBrowserToolkit
 from langchain_community.tools.playwright.utils import (
-    create_async_playwright_browser,  # A synchronous browser is available, though it isn't compatible with jupyter.\n",      },
+    create_sync_playwright_browser,  # A synchronous browser is available, though it isn't compatible with jupyter.\n",      },
 )
 
 from datetime import datetime
@@ -31,7 +31,7 @@ def chat3(userid, username, input):
     history = history_util.get_memory(userid).load_memory_variables({})['history']
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
     duckduck_search = DuckDuckGoSearchRun()
-    async_browser = create_async_playwright_browser()
+    async_browser = create_sync_playwright_browser()
     toolkit = PlayWrightBrowserToolkit.from_browser(async_browser=async_browser)
     web_scrape_tools = toolkit.get_tools()
     tools = [
