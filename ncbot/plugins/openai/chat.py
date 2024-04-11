@@ -33,7 +33,6 @@ def chat3(userid, username, input):
     history = history_util.get_memory(userid).load_memory_variables({})['history']
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
     duckduck_search = DuckDuckGoSearchRun()
-    nest_asyncio.apply()
     async_browser = create_async_playwright_browser()
     toolkit = PlayWrightBrowserToolkit.from_browser(async_browser=async_browser)
     web_tools = toolkit.get_tools()
