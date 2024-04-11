@@ -22,7 +22,7 @@ llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 @base.command(plname=plugin_name, funcname='chat3',desc='Chat with Chatgpt using gpt-3.5-turbo model')
 def chat3(userid, username, input):
     history_util = get_instance()
-    history = history_util.get_memory(userid)
+    history = history_util.get_base_memory(userid)
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
     duckduck_search = DuckDuckGoSearchAPIWrapper()
     tools = [
@@ -43,9 +43,8 @@ def chat3(userid, username, input):
     agent = create_openai_tools_agent(llm, tools, prompt)
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    chat_history = []
-    response = agent_executor.invoke({"input": input, "history": chat_history})['output']
-    new_history = ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=chat_history))
+    response = agent_executor.invoke({"input": input, "history": history})['output']
+    new_history = ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     history_util.save_memory(userid, new_history)
     return response
     
