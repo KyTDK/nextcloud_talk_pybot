@@ -33,9 +33,9 @@ def chat3(userid, username, input):
             description="useful for when you need to answer questions about current events. You should ask targeted questions"
         ), 
         Tool(
-            name = "Date and time",
-            func=datetime.now(),
-            description="get the current date and time, necessary if you need to answer a question regarding date or time"
+            name="Datetime",
+            func=lambda x: datetime.now().isoformat(),
+            description="Returns the current datetime"
         )
     ]
     # Get the prompt to use - you can modify this!
