@@ -11,3 +11,4 @@ langchain-openai
 duckduckgo-search
 wikipedia
 playwright
+lxml
