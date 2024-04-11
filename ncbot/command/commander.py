@@ -104,7 +104,7 @@ def dispatch(chat: NCChat):
     else:
         ret = get_default_desc()
     #nc_agent.unlock_conversation(chat.conversation_token)
-    chat.response = await ret
+    chat.response = ret
 
 
 def register(plname, funcname, desc, func, remember_command):
