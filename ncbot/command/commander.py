@@ -90,14 +90,14 @@ def save_last_command(chat: NCChat, command: Command):
     return False
 
 
-async def dispatch(chat: NCChat):
+def dispatch(chat: NCChat):
     ret = 'test'
     #nc_agent.lock_conversation(chat.conversation_token)
 
     find_last_command(chat)
     command = Command(chat)
     if command.matched_func:
-        ret = command.execute()
+        ret = asyncio.run(command.execute())
         save_last_command(chat, command)
     elif command.matched_plugin:
         ret = get_plugin_desc(command.plname)
