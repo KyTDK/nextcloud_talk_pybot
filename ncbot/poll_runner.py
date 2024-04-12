@@ -37,21 +37,12 @@ async def deal_unread_chats(unread_chats):
     for chat in unread_chats:
         chatC = NCChat(chat)
         if chatC.user_id == ncconfig.cf.username:
-            skip_self_unread(chatC)
+            nc_agent.mark_chat_read(chatC.conversation_token, chatC.chat_id)
         else:
             try:
                 nc_agent.mark_chat_read(chatC.conversation_token, chatC.chat_id)
                 await commander.dispatch(chatC)
-                send_response(chatC)
+                nc_agent.send_message(chatC.conversation_token, chatC.chat_id, chatC.response, chatC.chat_message, chatC.user_id, False)
             except Exception as e:
                 traceback.print_exc()
                 logger.error(e)
-        
-
-
-def skip_self_unread(chat: NCChat):
-    nc_agent.mark_chat_read(chat.conversation_token, chat.chat_id)
-
-
-def send_response(chat: NCChat):
-    nc_agent.send_message(chat.conversation_token, chat.chat_id, chat.response, chat.chat_message,chat.user_id, False)
