@@ -44,9 +44,9 @@ class Command:
                     self.func = current_command[self.plname][self.funcname]['func']       
 
 
-    def execute(self):
+    async def execute(self):
         try:
-            return self.func(self.user_id, self.user_name, self.value)
+            return await self.func(self.user_id, self.user_name, self.value)
         except Exception as e:
             # Use traceback.format_exc() to get the stack trace as a string
             stack_trace = traceback.format_exc()
@@ -91,14 +91,14 @@ def save_last_command(chat: NCChat, command: Command):
     return False
 
 
-def dispatch(chat: NCChat):
+async def dispatch(chat: NCChat):
     ret = 'test'
     #nc_agent.lock_conversation(chat.conversation_token)
 
     find_last_command(chat)
     command = Command(chat)
     if command.matched_func:
-        ret = command.execute()
+        ret = await command.execute()
         save_last_command(chat, command)
     elif command.matched_plugin:
         ret = get_plugin_desc(command.plname)
