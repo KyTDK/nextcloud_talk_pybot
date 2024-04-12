@@ -39,6 +39,7 @@ def deal_unread_chats(unread_chats):
             skip_self_unread(chatC)
         else:
             try:
+                nc_agent.mark_chat_read(chatC.conversation_token, chatC.chat_id)
                 commander.dispatch(chatC)
                 send_response(chatC)
             except Exception as e:
@@ -52,5 +53,4 @@ def skip_self_unread(chat: NCChat):
 
 
 def send_response(chat: NCChat):
-    if nc_agent.send_message(chat.conversation_token, chat.chat_id, chat.response, chat.chat_message,chat.user_id, False):
-        nc_agent.mark_chat_read(chat.conversation_token, chat.chat_id)
+    nc_agent.send_message(chat.conversation_token, chat.chat_id, chat.response, chat.chat_message,chat.user_id, False)
