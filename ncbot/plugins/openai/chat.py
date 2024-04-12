@@ -12,7 +12,6 @@ from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.callbacks.manager import get_openai_callback
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
-from langchain_experimental.tools import PythonREPLTool
 
 from datetime import datetime
 
@@ -38,8 +37,7 @@ def chat3(userid, username, input):
             name="Datetime",
             func=lambda x: datetime.now().isoformat(),
             description="Returns the current datetime"
-        ),
-        PythonREPLTool()
+        )
     ]
     
     # Get the prompt to use - you can modify this!
