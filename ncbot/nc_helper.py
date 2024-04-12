@@ -49,14 +49,13 @@ class NCHelper:
         rutil.put_response(self.final_url_v4(f'/room/{token}/read-only'), data)
 
     
-    def send_message(self, token, chatid, comment, message,user_id, direct_reply = False):
+    def send_message(self, token, chatid, comment, message, user_id, direct_reply = False):
         data = {}
         if direct_reply :
             data['message'] = comment
             data['replyTo'] = chatid
         else:
             data['message'] = comment
-        data['message'] = f'@"{user_id}" \n'+data['message']
         response = rutil.post_response(self.final_url_v1(f'/chat/{token}'), data)
         return response != None
     

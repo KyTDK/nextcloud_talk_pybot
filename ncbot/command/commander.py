@@ -98,7 +98,7 @@ async def dispatch(chat: NCChat):
     find_last_command(chat)
     command = Command(chat)
     if command.matched_func:
-        ret = command.execute()
+        ret = await command.execute()
         save_last_command(chat, command)
     elif command.matched_plugin:
         ret = get_plugin_desc(command.plname)
