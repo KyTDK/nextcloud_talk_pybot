@@ -1,5 +1,7 @@
 from ncbot.nc_helper import NCHelper
 from ncbot.nc_chat import NCChat
+from nc.plugins.openai.chat import chat3
+
 import os
 import importlib.util
 import traceback
