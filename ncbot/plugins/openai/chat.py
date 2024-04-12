@@ -29,7 +29,6 @@ llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 def chat3(userid, username, input):
     history_util = get_instance()
     history = history_util.get_memory(userid).load_memory_variables({})['history']
-    llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
     duckduck_search = DuckDuckGoSearchRun()
     tools = [
         Tool(
@@ -57,7 +56,7 @@ def chat3(userid, username, input):
         MessagesPlaceholder("agent_scratchpad"),
     ])
     # Construct the OpenAI Tools agent
-    agent = create_openai_tools_agent(llm, tools, prompt)
+    agent = create_openai_tools_agent(llm_gpt3, tools, prompt)
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = agent_executor.invoke({"input": input, "history": history}, verbose=True)
