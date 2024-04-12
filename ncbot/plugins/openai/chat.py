@@ -25,6 +25,8 @@ model_gpt_3 = 'gpt-3.5-turbo'
 
 llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 
+web_tools = PlayWrightBrowserToolkit.from_browser(sync_browser=create_sync_playwright_browser()).get_tools()
+
 @base.command(plname=plugin_name, funcname='chat3',desc='Chat with Chatgpt using gpt-3.5-turbo model')
 def chat3(userid, username, input):
     history_util = get_instance()
@@ -42,9 +44,6 @@ def chat3(userid, username, input):
             description="Returns the current datetime"
         )
     ]
-    sync_browser = create_sync_playwright_browser()
-    toolkit = PlayWrightBrowserToolkit.from_browser(sync_browser=sync_browser)
-    web_tools = toolkit.get_tools()
     tools+=web_tools
     
     # Get the prompt to use - you can modify this!
