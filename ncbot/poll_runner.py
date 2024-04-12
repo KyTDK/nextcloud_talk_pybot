@@ -23,8 +23,8 @@ def start():
                 chats = nc_agent.get_chat_list(conversation['token'],conversation['unreadMessages'])
                 unread_chats += chats
                 logger.debug(f'found {len(chats)} unread chats from token {conversation["token"]}')
-            asyncio.run(deal_unread_chats(unread_chats))
-
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(deal_unread_chats(unread_chats))
             
         except Exception as e:
             traceback.print_exc()

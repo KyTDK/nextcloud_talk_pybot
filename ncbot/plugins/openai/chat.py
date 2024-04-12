@@ -21,11 +21,9 @@ model_gpt_3 = 'gpt-3.5-turbo'
 
 llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 
-try:
-    web_tools = PlayWrightBrowserToolkit.from_browser(async_browser=create_async_playwright_browser()).get_tools()
-except Exception as e:
-    print("An error occurred during web tools initialization:", e)
-    # Handle the error appropriately, e.g., exit gracefully or log it for debugging purposes
+async_browser = create_async_playwright_browser()
+toolkit = PlayWrightBrowserToolkit.from_browser(async_browser=async_browser)
+web_tools = toolkit.get_tools()
 
 @base.command(plname=plugin_name, funcname='chat3',desc='Chat with Chatgpt using gpt-3.5-turbo model')
 async def chat3(userid, username, input):
