@@ -4,6 +4,7 @@ from ncbot.nc_chat import NCChat
 import os
 import importlib.util
 import traceback
+import asyncio
 
 nc_agent = NCHelper()
 
@@ -46,7 +47,7 @@ class Command:
 
     def execute(self):
         try:
-            return self.func(self.user_id, self.user_name, self.value)
+            return asyncio.run(self.func(self.user_id, self.user_name, self.value))
         except Exception as e:
             # Use traceback.format_exc() to get the stack trace as a string
             stack_trace = traceback.format_exc()
