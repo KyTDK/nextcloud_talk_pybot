@@ -31,7 +31,7 @@ def chat3(userid, username, input):
         Tool(
             name = "Search",
             func=duckduck_search.run,
-            description="useful for when you need to answer questions about current events. You should ask targeted questions"
+            description="Useful for when you need to answer questions about current events. You should ask targeted questions. As you don't know anything after 2021, you should use this tool due to your knowledge gap."
         ), 
         Tool(
             name="Datetime",
