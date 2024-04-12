@@ -4,7 +4,6 @@ from ncbot.nc_chat import NCChat
 import os
 import importlib.util
 import traceback
-import asyncio
 
 nc_agent = NCHelper()
 
@@ -45,9 +44,9 @@ class Command:
                     self.func = current_command[self.plname][self.funcname]['func']       
 
 
-    def execute(self):
+    async def execute(self):
         try:
-            return asyncio.run(self.func(self.user_id, self.user_name, self.value))
+            return await self.func(self.user_id, self.user_name, self.value)
         except Exception as e:
             # Use traceback.format_exc() to get the stack trace as a string
             stack_trace = traceback.format_exc()
@@ -92,7 +91,7 @@ def save_last_command(chat: NCChat, command: Command):
     return False
 
 
-def dispatch(chat: NCChat):
+async def dispatch(chat: NCChat):
     ret = 'test'
     #nc_agent.lock_conversation(chat.conversation_token)
 
