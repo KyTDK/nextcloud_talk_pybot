@@ -57,6 +57,7 @@ class MemoryHistoryUtil():
                 if data.get('content'):  # Check if 'content' key exists within 'data'
                     content = data['content']
                     tokens_in_history+=llm.get_num_tokens(content)
+        return tokens_in_history
 
     def __tuncate_memory(self, history):
         #truncate conversation amount
