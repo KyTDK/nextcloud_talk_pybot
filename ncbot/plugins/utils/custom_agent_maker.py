@@ -16,13 +16,12 @@ def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
     llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
     messages = prompt.to_messages()
     num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)
-    new_messages = []
     last_message = messages.pop()
     while num_tokens >= 4096:
         last_message.content = last_message.content[:-1]
-        num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)+llm_gpt3.get_num_tokens_from_messages(last_message)
-    new_messages.insert(len(new_messages), last_message)
-    return ChatPromptValue(messages=new_messages)
+        num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)+llm_gpt3.get_nu(last_message)
+    messages.append(last_message)
+    return ChatPromptValue(messages=messages)
 
 def create_openai_tools_agent(
     llm: BaseLanguageModel, tools: Sequence[BaseTool], prompt: ChatPromptTemplate
