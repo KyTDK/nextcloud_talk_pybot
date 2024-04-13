@@ -25,7 +25,6 @@ def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
         while num_tokens>TOKEN_LIMIT:
             new_last_tool_message = ToolMessage(content=last_message.content[:(num_tokens-TOKEN_LIMIT)], additional_kwargs=last_message.additional_kwargs, tool_call_id=last_message.tool_call_id)
             num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)+llm_gpt3.get_num_tokens_from_messages([new_last_tool_message])
-            print(num_tokens)
         messages.append(new_last_tool_message)
     return ChatPromptValue(messages=messages)
 
