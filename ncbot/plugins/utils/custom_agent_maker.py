@@ -14,15 +14,16 @@ from langchain.agents.format_scratchpad.openai_tools import (
 from langchain_core.messages.tool import ToolMessage
 from langchain.agents.output_parsers.openai_tools import OpenAIToolsAgentOutputParser
 
+TOKEN_LIMIT = 4000
+
 def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
     llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
     messages = prompt.to_messages()
     num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)
-    if messages and num_tokens>4000 and isinstance(messages[-1], ToolMessage):
+    if messages and num_tokens>TOKEN_LIMIT and isinstance(messages[-1], ToolMessage):
         last_message = messages.pop()
-        new_last_tool_message = last_message
-        while num_tokens>4000:
-            new_last_tool_message = ToolMessage(content=last_message.content[:1], additional_kwargs=last_message.additional_kwargs, tool_call_id=last_message.tool_call_id)
+        while num_tokens>TOKEN_LIMIT:
+            new_last_tool_message = ToolMessage(content=last_message.content[:(num_tokens-TOKEN_LIMIT)], additional_kwargs=last_message.additional_kwargs, tool_call_id=last_message.tool_call_id)
             num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)+llm_gpt3.get_num_tokens_from_messages([new_last_tool_message])
             print(num_tokens)
         messages.append(new_last_tool_message)
