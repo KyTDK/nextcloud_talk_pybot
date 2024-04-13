@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import List, Sequence
 
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.prompts.chat import ChatPromptTemplate
@@ -11,12 +11,37 @@ from langchain_core.messages.base import BaseMessage
 from langchain.agents.format_scratchpad.openai_tools import (
     format_to_openai_tool_messages,
 )
+from langchain_core.messages.tool import ToolMessage
 from langchain.agents.output_parsers.openai_tools import OpenAIToolsAgentOutputParser
+
+def get_tool_messages(messages: List[BaseMessage]) -> List[ToolMessage]:
+  """Extracts all BaseMessage objects of type ToolMessage from the messages list.
+
+  Args:
+      messages: A list of BaseMessage objects.
+
+  Returns:
+      A list containing only objects of type ToolMessage.
+  """
+  tool_messages = []
+  for message in messages:
+    if isinstance(message, ToolMessage):
+      tool_messages.append(message)
+  return tool_messages
+
 def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
     llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
     messages = prompt.to_messages()
     num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)
-    print(messages)
+    tool_messages = get_tool_messages(messages)
+    last_tool_message = tool_messages.pop()
+    new_last_tool_message = last_tool_message
+    while num_tokens>4000:
+        new_last_tool_message = ToolMessage(content=last_tool_message.content[:1], additional_kwargs=last_tool_message.additional_kwargs, tool_call_id=last_tool_message.tool_call_id)
+    #replace old tool message with new, truncated one
+    for i, n in enumerate(messages):
+       if n == last_tool_message:
+          messages[i] = new_last_tool_message
     return ChatPromptValue(messages=messages)
 
 def create_openai_tools_agent(
