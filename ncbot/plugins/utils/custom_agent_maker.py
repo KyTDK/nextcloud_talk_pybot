@@ -14,26 +14,11 @@ from langchain.agents.format_scratchpad.openai_tools import (
 from langchain_core.messages.tool import ToolMessage
 from langchain.agents.output_parsers.openai_tools import OpenAIToolsAgentOutputParser
 
-def get_tool_messages(messages: List[BaseMessage]) -> List[ToolMessage]:
-  """Extracts all BaseMessage objects of type ToolMessage from the messages list.
-
-  Args:
-      messages: A list of BaseMessage objects.
-
-  Returns:
-      A list containing only objects of type ToolMessage.
-  """
-  tool_messages = []
-  for message in messages:
-    if isinstance(message, ToolMessage):
-      tool_messages.append(message)
-  return tool_messages
-
 def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
     llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
     messages = prompt.to_messages()
     num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)
-    if messages:
+    if messages and num_tokens>4000:
         last_message = messages.pop()
         if isinstance(last_message, ToolMessage):
             new_last_tool_message = last_message
