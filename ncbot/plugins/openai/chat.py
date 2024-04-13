@@ -14,8 +14,10 @@ from langchain_community.tools.playwright.utils import (
 
 from datetime import datetime
 
+from ncbot.plugins.utils import custom_agent_maker
+
 plugin_name = 'openai'
-model_gpt_3 = 'gpt-3.5-turbo'
+model_gpt_3 = 'gpt-3.5-turbo-0125'
 
 llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 
@@ -51,7 +53,7 @@ async def chat3(userid, username, input):
         MessagesPlaceholder("agent_scratchpad"),
     ])
     # Construct the OpenAI Tools agent
-    agent = create_openai_tools_agent(llm_gpt3, tools, prompt)
+    agent = custom_agent_maker(llm_gpt3, tools, prompt)
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
