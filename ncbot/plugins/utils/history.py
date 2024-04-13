@@ -78,6 +78,10 @@ class MemoryHistoryUtil():
                     if data.get('content'):  # Check if 'content' key exists within 'data'
                         content = data['content']
                         if content:
+                            if len(content) <= tokens_in_history - self.TOKEN_LIMIT:
+                                content = ""  # Delete the whole string
+                            else:
+                                content = content[(tokens_in_history - self.TOKEN_LIMIT):] #truncate
                             content = content[(tokens_in_history-self.TOKEN_LIMIT):]
                             entry['data']['content'] = content
                             print("tokens_in_history: " + str(tokens_in_history) + " index_value: " + str(tokens_in_history-self.TOKEN_LIMIT) + " Content_length: " + str(len(content)))
