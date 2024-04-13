@@ -19,7 +19,7 @@ def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
     last_message = messages.pop()
     while num_tokens >= 4096:
         last_message.content = last_message.content[:-1]
-        num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)+llm_gpt3.get_nu(last_message)
+        num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)+llm_gpt3.get_num_tokens_from_messages([last_message])
     messages.append(last_message)
     return ChatPromptValue(messages=messages)
 
