@@ -71,7 +71,7 @@ class MemoryHistoryUtil():
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
         print("Tokens in history " + str(tokens_in_history))
         entry = memory_dict.pop(0)
-        while tokens_in_history>self.TOKEN_LIMIT:
+        while tokens_in_history>=self.TOKEN_LIMIT:
             if memory_dict:
                 if entry.get('data'):  # Check if 'data' key exists
                     data = entry['data']
