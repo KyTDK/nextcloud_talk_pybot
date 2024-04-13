@@ -57,7 +57,7 @@ class MemoryHistoryUtil():
             memory_dict = memory_dict[2:]
         #truncate token amount
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
-        
+        print("Memory dict: "+str(memory_dict))
         return memory_dict
 
 
