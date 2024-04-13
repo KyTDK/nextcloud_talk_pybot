@@ -20,7 +20,7 @@ def start():
             for conversation in unread_conversation:
                 if conversation['type'] == ncconstants.conversation_type_changelog:
                     continue
-                chats = nc_agent.get_chat_list(conversation['token'],conversation['unreadMessages'])
+                chats = nc_agent.get_chat_list(conversation['token'], conversation['unreadMessages'])
                 unread_chats += chats
                 logger.debug(f'found {len(chats)} unread chats from token {conversation["token"]}')
             loop = asyncio.get_event_loop()
