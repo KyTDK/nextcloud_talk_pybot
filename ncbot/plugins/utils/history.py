@@ -1,6 +1,7 @@
 
 from abc import abstractmethod
 from langchain.schema import messages_from_dict, messages_to_dict
+from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 import ncbot.config as ncconfig
 
@@ -50,9 +51,13 @@ class MemoryHistoryUtil():
 
 
     def __tuncate_memory(self, history):
+        #truncate conversation amount
         memory_dict = self.__message_to_dict(history)
         if len(memory_dict) > self.max_chat_history * 2:
             memory_dict = memory_dict[2:]
+        #truncate token amount
+        llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
+        
         return memory_dict
 
 
