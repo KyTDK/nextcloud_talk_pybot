@@ -33,7 +33,7 @@ def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
     llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
     messages = prompt.to_messages()
     num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)
-    if last_message:
+    if messages:
         last_message = messages.pop()
         if isinstance(last_message, ToolMessage):
             new_last_tool_message = last_message
