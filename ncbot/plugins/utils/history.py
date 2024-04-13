@@ -59,6 +59,8 @@ class MemoryHistoryUtil():
                     tokens_in_history+=llm.get_num_tokens(content)
         return tokens_in_history
 
+    TOKEN_LIMIT = 1000
+
     def __tuncate_memory(self, history):
         #truncate conversation amount
         memory_dict = self.__message_to_dict(history)
@@ -69,14 +71,14 @@ class MemoryHistoryUtil():
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
         print("Tokens in history " + str(tokens_in_history))
         entry = memory_dict.pop(0)
-        while tokens_in_history>1000:
+        while tokens_in_history>self.TOKEN_LIMIT:
             if memory_dict:
                 if entry.get('data'):  # Check if 'data' key exists
                     data = entry['data']
                     if data.get('content'):  # Check if 'content' key exists within 'data'
                         content = data['content']
                         if content:
-                            content = content[:1]
+                            content = content[:(tokens_in_history-self.TOKEN_LIMIT)]
                             print("Content: "+content)
                         else:
                             entry = memory_dict.pop(0)
