@@ -33,15 +33,16 @@ def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
     llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
     messages = prompt.to_messages()
     num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)
-    last_message = messages.pop()
-    if isinstance(last_message, ToolMessage):
-        new_last_tool_message = last_message
-        while num_tokens>4000:
-            new_last_tool_message = ToolMessage(content=last_message.content[:1], additional_kwargs=last_message.additional_kwargs, tool_call_id=last_message.tool_call_id)
-        #replace old tool message with new, truncated one
-        for i, n in enumerate(messages):
-            if n == last_message:
-                messages[i] = new_last_tool_message
+    if last_message:
+        last_message = messages.pop()
+        if isinstance(last_message, ToolMessage):
+            new_last_tool_message = last_message
+            while num_tokens>4000:
+                new_last_tool_message = ToolMessage(content=last_message.content[:1], additional_kwargs=last_message.additional_kwargs, tool_call_id=last_message.tool_call_id)
+            #replace old tool message with new, truncated one
+            for i, n in enumerate(messages):
+                if n == last_message:
+                    messages[i] = new_last_tool_message
     return ChatPromptValue(messages=messages)
 
 
