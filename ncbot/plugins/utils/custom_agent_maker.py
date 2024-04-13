@@ -7,7 +7,7 @@ from langchain_core.tools import BaseTool
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from langchain_core.prompt_values import ChatPromptValue
 from langchain_openai import ChatOpenAI
-
+from langchain_core.messages.base import BaseMessage
 from langchain.agents.format_scratchpad.openai_tools import (
     format_to_openai_tool_messages,
 )
@@ -16,14 +16,13 @@ def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
     llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
     messages = prompt.to_messages()
     num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)
-    ai_function_messages = messages[2:]
-    while num_tokens > 4_000:
-        ai_function_messages = ai_function_messages[2:]
-        num_tokens = llm_gpt3.get_num_tokens_from_messages(
-            messages[:2] + ai_function_messages
-        )
-    messages = messages[:2] + ai_function_messages
-    return ChatPromptValue(messages=messages)
+    new_messages = []
+    last_message = messages.pop()
+    while num_tokens >= 4096:
+        last_message.content = last_message.content[:-1]
+        num_tokens = llm_gpt3.get_num_tokens_from_messages(messages)+llm_gpt3.get_num_tokens_from_messages(last_message)
+    new_messages.insert(len(new_messages), last_message)
+    return ChatPromptValue(messages=new_messages)
 
 def create_openai_tools_agent(
     llm: BaseLanguageModel, tools: Sequence[BaseTool], prompt: ChatPromptTemplate
