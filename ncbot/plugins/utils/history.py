@@ -49,7 +49,7 @@ class MemoryHistoryUtil():
         memory = self.__tuncate_memory(chat_memory)
         self._save_to_memory(userid, memory)
 
-    def count_tokens_in_dict(memory_dict, llm):
+    def count_tokens_in_dict(self, memory_dict, llm):
         tokens_in_history = 0
         for entry in memory_dict:
             if entry.get('data'):  # Check if 'data' key exists
