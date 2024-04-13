@@ -78,10 +78,10 @@ class MemoryHistoryUtil():
                     if data.get('content'):  # Check if 'content' key exists within 'data'
                         content = data['content']
                         if content:
-                            content = content[:(tokens_in_history-self.TOKEN_LIMIT)]
+                            content = content[(tokens_in_history-self.TOKEN_LIMIT):]
                             entry['data']['content'] = content
                             print("Content: "+content)
-                            tokens_in_history=self.count_tokens_in_dict(memory_dict, llm_gpt3)
+                            tokens_in_history=llm_gpt3.get_num_tokens(content)+self.count_tokens_in_dict(memory_dict, llm_gpt3)
                         else:
                             entry = memory_dict.pop(0)
         memory_dict.insert(0, entry)
