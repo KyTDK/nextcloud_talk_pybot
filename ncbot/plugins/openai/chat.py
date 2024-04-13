@@ -40,7 +40,12 @@ async def chat3(userid, username, input):
             name="Datetime",
             func=lambda x: datetime.now().isoformat(),
             description="Returns the current datetime"
-        )
+        ),
+        Tool(
+            name = "Name",
+            func=lambda x: username,
+            description="Retrieve the name of the user, useful for greeting them and referring to them"
+        ), 
     ]
     tools+=web_tools
     

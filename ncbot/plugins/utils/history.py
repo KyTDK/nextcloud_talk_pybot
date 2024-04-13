@@ -71,6 +71,7 @@ class MemoryHistoryUtil():
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
         print("Tokens in history " + str(tokens_in_history))
         entry = memory_dict.pop(0)
+        modified_entry = None
         while tokens_in_history>=self.TOKEN_LIMIT:
             if memory_dict:
                 if entry.get('data'):  # Check if 'data' key exists
@@ -79,10 +80,14 @@ class MemoryHistoryUtil():
                         content = data['content']
                         if content:
                             content = content[:(tokens_in_history-self.TOKEN_LIMIT)]
+                            modified_entry = entry.copy()  # Create a copy to modify
+                            modified_entry['data']['content'] = content
                             print("Content: "+content)
+                            tokens_in_history+=(llm_gpt3.get_num_tokens(content)+self.count_tokens_in_dict(memory_dict, llm_gpt3))
                         else:
                             entry = memory_dict.pop(0)
-                tokens_in_history+=(llm_gpt3.get_num_tokens(content)+self.count_tokens_in_dict(memory_dict, llm_gpt3))
+        if modified_entry:
+            memory_dict.insert(0, modified_entry)
         return memory_dict
 
 
