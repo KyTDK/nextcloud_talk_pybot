@@ -81,7 +81,7 @@ class MemoryHistoryUtil():
                             content = content[:(tokens_in_history-self.TOKEN_LIMIT)]
                             entry['data']['content'] = content
                             print("Content: "+content)
-                            tokens_in_history+=(llm_gpt3.get_num_tokens(content)+self.count_tokens_in_dict(memory_dict, llm_gpt3))
+                            tokens_in_history=self.count_tokens_in_dict(memory_dict, llm_gpt3)
                         else:
                             entry = memory_dict.pop(0)
         memory_dict.insert(0, entry)
