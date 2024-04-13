@@ -67,6 +67,7 @@ class MemoryHistoryUtil():
         #truncate token amount
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
+        print("Tokens in history " + str(tokens_in_history))
         entry = memory_dict.pop(0)
         while tokens_in_history>1000:
             if memory_dict:
