@@ -4,7 +4,6 @@ from ncbot.plugins.utils.history import get_instance
 
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
-from langchain_openai import ChatOpenAI
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
@@ -16,7 +15,6 @@ from langchain_community.tools.playwright.utils import (
 from datetime import datetime
 
 plugin_name = 'openai'
-model_gpt_4 = 'gpt-4'
 model_gpt_3 = 'gpt-3.5-turbo'
 
 llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
