@@ -49,6 +49,14 @@ class MemoryHistoryUtil():
         memory = self.__tuncate_memory(chat_memory)
         self._save_to_memory(userid, memory)
 
+    def count_tokens_in_dict(memory_dict, llm):
+        tokens_in_history = 0
+        for entry in memory_dict:
+            if entry.get('data'):  # Check if 'data' key exists
+                data = entry['data']
+                if data.get('content'):  # Check if 'content' key exists within 'data'
+                    content = data['content']
+                    tokens_in_history+=llm.get_num_tokens(content)
 
     def __tuncate_memory(self, history):
         #truncate conversation amount
@@ -57,7 +65,19 @@ class MemoryHistoryUtil():
             memory_dict = memory_dict[2:]
         #truncate token amount
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
-        print("Memory dict: "+str(memory_dict))
+        tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
+        entry = memory_dict.pop(0)
+        while tokens_in_history>1000:
+            if memory_dict:
+                if entry.get('data'):  # Check if 'data' key exists
+                    data = entry['data']
+                    if data.get('content'):  # Check if 'content' key exists within 'data'
+                        content = data['content']
+                        if content:
+                            content = content[:1]
+                        else:
+                            entry = memory_dict.pop(0)
+                tokens_in_history+=(llm_gpt3.get_num_tokens(content)+self.count_tokens_in_dict(memory_dict, llm_gpt3))
         return memory_dict
 
 
