@@ -73,20 +73,17 @@ class MemoryHistoryUtil():
         entry = memory_dict.pop(0)
         while tokens_in_history>self.TOKEN_LIMIT:
             if memory_dict:
-                if entry.get('data'):  # Check if 'data' key exists
-                    data = entry['data']
-                    if data.get('content'):  # Check if 'content' key exists within 'data'
-                        content = data['content']
-                        if len(content) != 0:
-                            trunc_amount = tokens_in_history - self.TOKEN_LIMIT
-                            if len(content) <= trunc_amount:
-                                content = ""  # Delete the whole string
-                            else:
-                                content = content[trunc_amount:] #truncate
-                            entry['data']['content'] = content
-                        else:
-                            entry = memory_dict.pop(0)
-                            print(str(entry))
+                if entry.get('data').get('content') and len(content) != 0 :  # Check if 'data' key exists
+                    trunc_amount = tokens_in_history - self.TOKEN_LIMIT
+                    if len(content) <= trunc_amount:
+                        content = ""  # Delete the whole string
+                    else:
+                        content = content[trunc_amount:] #truncate
+                    entry['data']['content'] = content
+                else:
+                    entry = memory_dict.pop(0)
+            else:
+                break
             print("tokens_in_history: " + str(tokens_in_history) + " index_value: " + str(trunc_amount) + " Content_length: " + str(len(content)))
             tokens_in_history=llm_gpt3.get_num_tokens(content)+self.count_tokens_in_dict(memory_dict, llm_gpt3)
         memory_dict.insert(0, entry)
