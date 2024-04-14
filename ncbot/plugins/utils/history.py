@@ -63,11 +63,11 @@ class MemoryHistoryUtil():
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
         entry = memory_dict.pop(0)
-        while tokens_in_history > self.TOKEN_LIMIT:
+        while tokens_in_history > TOKEN_LIMIT:
             if memory_dict:
                 # Check if 'data' key exists
                 if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0:
-                    trunc_amount = tokens_in_history - self.TOKEN_LIMIT
+                    trunc_amount = tokens_in_history - TOKEN_LIMIT
                     content = entry['data']['content']
                     if len(content) <= trunc_amount:
                         content = ""  # Delete the whole string
