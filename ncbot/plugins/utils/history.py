@@ -50,14 +50,14 @@ class MemoryHistoryUtil():
         self._save_to_memory(userid, memory)
 
     def count_tokens_in_dict(self, memory_dict, llm):
-        tokens_in_history = 0
+        count = 0
         for entry in memory_dict:
             if entry.get('data'):  # Check if 'data' key exists
                 data = entry['data']
                 if data.get('content'):  # Check if 'content' key exists within 'data'
                     content = data['content']
-                    tokens_in_history+=llm.get_num_tokens(content)
-        return tokens_in_history
+                    count+=llm.get_num_tokens(content)
+        return count
 
     TOKEN_LIMIT = 1000
 
