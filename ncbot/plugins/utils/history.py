@@ -1,21 +1,21 @@
 
+from ncbot.plugins.utils.history_redis import RedisMemoryHistoryUtil
+from ncbot.plugins.utils.history_memory import InMemoryHistoryUtil
 from abc import abstractmethod
 from langchain.schema import messages_from_dict, messages_to_dict
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 import ncbot.config as ncconfig
 
+
 class MemoryHistoryUtil():
-    
 
     def __init__(self):
         self.max_chat_history = ncconfig.cf.max_chat_history
         self.save_type = ncconfig.cf.save_type
-    
 
     def _isStore(self):
         return self.max_chat_history != 0
-
 
     @abstractmethod
     def _save_to_memory(self, userid, history):
@@ -25,11 +25,10 @@ class MemoryHistoryUtil():
     def _get_from_memory(self, userid):
         pass
 
-
     @abstractmethod
     def clear_memory(self, userid):
         pass
-        
+
     def get_memory(self, userid):
         dict = self._get_from_memory(userid)
         if dict is None or not dict:  # Check for None and empty dictionary
@@ -56,55 +55,49 @@ class MemoryHistoryUtil():
                 data = entry['data']
                 if data.get('content'):  # Check if 'content' key exists within 'data'
                     content = data['content']
-                    count+=llm.get_num_tokens(content)
+                    count += llm.get_num_tokens(content)
         return count
 
-    TOKEN_LIMIT = 1000
-
     def __tuncate_memory(self, history):
+        TOKEN_LIMIT = self.max_chat_history
         memory_dict = self.__message_to_dict(history)
-        #truncate token amount
+        # truncate token amount
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
         entry = memory_dict.pop(0)
-        print("Memory before: "+str(memory_dict))
-        while tokens_in_history>self.TOKEN_LIMIT:
+        while tokens_in_history > self.TOKEN_LIMIT:
             if memory_dict:
-                if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0 :  # Check if 'data' key exists
+                # Check if 'data' key exists
+                if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0:
                     trunc_amount = tokens_in_history - self.TOKEN_LIMIT
                     content = entry['data']['content']
                     if len(content) <= trunc_amount:
                         content = ""  # Delete the whole string
                     else:
-                        content = content[trunc_amount:] #truncate
+                        content = content[trunc_amount:]  # truncate
                     entry['data']['content'] = content
-                    tokens_in_history=llm_gpt3.get_num_tokens(content)+self.count_tokens_in_dict(memory_dict, llm_gpt3)
+                    tokens_in_history = llm_gpt3.get_num_tokens(
+                        content)+self.count_tokens_in_dict(memory_dict, llm_gpt3)
                 else:
                     entry = memory_dict.pop(0)
             else:
                 break
         memory_dict.insert(0, entry)
-        print("Memory after: "+str(memory_dict))
         return memory_dict
-
 
     def _get_index_key(self, userid):
         return f'memory_{userid}'
-    
 
     def __message_to_dict(self, history: ChatMessageHistory):
         return messages_to_dict(history.messages)
-    
 
     def __dict_to_message(self, load_dict):
         return messages_from_dict(load_dict)
-    
 
-from ncbot.plugins.utils.history_memory import InMemoryHistoryUtil
-from ncbot.plugins.utils.history_redis import RedisMemoryHistoryUtil
 
 in_memory_util = InMemoryHistoryUtil()
 redis_memory_util = RedisMemoryHistoryUtil()
+
 
 def get_instance():
     match ncconfig.cf.save_type:
