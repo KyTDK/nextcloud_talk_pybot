@@ -86,7 +86,6 @@ class MemoryHistoryUtil():
                     entry = memory_dict.pop(0)
             else:
                 break
-            print("tokens_in_history: " + str(tokens_in_history) + " index_value: " + str(trunc_amount) + " Content_length: " + str(len(content)))
         memory_dict.insert(0, entry)
         return memory_dict
 
