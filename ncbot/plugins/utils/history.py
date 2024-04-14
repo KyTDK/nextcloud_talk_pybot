@@ -71,8 +71,8 @@ class MemoryHistoryUtil():
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
         print("Tokens in history " + str(tokens_in_history))
         entry = memory_dict.pop(0)
+        print(str(memory_dict))
         while tokens_in_history>self.TOKEN_LIMIT:
-            print(str(memory_dict))
             if memory_dict:
                 if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0 :  # Check if 'data' key exists
                     trunc_amount = tokens_in_history - self.TOKEN_LIMIT
