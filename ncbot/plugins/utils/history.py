@@ -81,6 +81,7 @@ class MemoryHistoryUtil():
                         content = content[trunc_amount:] #truncate
                     entry['data']['content'] = content
                     tokens_in_history=llm_gpt3.get_num_tokens(content)+self.count_tokens_in_dict(memory_dict, llm_gpt3)
+                    print("Content: "+content+" Token_history: "+tokens_in_history)
                 else:
                     entry = memory_dict.pop(0)
             else:
