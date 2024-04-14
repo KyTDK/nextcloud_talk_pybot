@@ -12,3 +12,4 @@ duckduckgo-search
 wikipedia 
 langchain_experimental
 xmltodict
+numexpr
