@@ -62,10 +62,7 @@ class MemoryHistoryUtil():
     TOKEN_LIMIT = 1000
 
     def __tuncate_memory(self, history):
-        #truncate conversation amount
         memory_dict = self.__message_to_dict(history)
-        if len(memory_dict) > self.max_chat_history * 2:
-            memory_dict = memory_dict[2:]
         #truncate token amount
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
