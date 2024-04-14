@@ -12,3 +12,4 @@ duckduckgo-search
 playwright
 beautifulsoup4
 lxml
+nc_py_api

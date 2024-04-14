@@ -67,6 +67,7 @@ class MemoryHistoryUtil():
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
         entry = memory_dict.pop(0)
+        print("Memory before: "+str(memory_dict))
         while tokens_in_history>self.TOKEN_LIMIT:
             if memory_dict:
                 if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0 :  # Check if 'data' key exists
@@ -83,6 +84,7 @@ class MemoryHistoryUtil():
             else:
                 break
         memory_dict.insert(0, entry)
+        print("Memory after: "+str(memory_dict))
         return memory_dict
 
 
