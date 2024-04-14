@@ -75,12 +75,11 @@ class MemoryHistoryUtil():
             if memory_dict:
                 if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0 :  # Check if 'data' key exists
                     trunc_amount = tokens_in_history - self.TOKEN_LIMIT
-                    content = data['content']
+                    content = entry['data']['content']
                     if len(content) <= trunc_amount:
                         content = ""  # Delete the whole string
                     else:
                         content = content[trunc_amount:] #truncate
-                    entry['data']['content'] = content
                 else:
                     entry = memory_dict.pop(0)
             else:
