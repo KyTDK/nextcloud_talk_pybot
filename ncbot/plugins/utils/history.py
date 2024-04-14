@@ -69,9 +69,7 @@ class MemoryHistoryUtil():
         #truncate token amount
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
-        print("Tokens in history " + str(tokens_in_history))
         entry = memory_dict.pop(0)
-        print(str(memory_dict))
         while tokens_in_history>self.TOKEN_LIMIT:
             if memory_dict:
                 if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0 :  # Check if 'data' key exists
@@ -81,10 +79,10 @@ class MemoryHistoryUtil():
                         content = ""  # Delete the whole string
                     else:
                         content = content[trunc_amount:] #truncate
+                    entry['data']['content'] = content
                     tokens_in_history=llm_gpt3.get_num_tokens(content)+self.count_tokens_in_dict(memory_dict, llm_gpt3)
                 else:
                     entry = memory_dict.pop(0)
-                    print(entry)
             else:
                 break
         memory_dict.insert(0, entry)
