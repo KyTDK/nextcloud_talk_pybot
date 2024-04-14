@@ -16,19 +16,19 @@ class MemoryHistoryUtil():
         return self.max_chat_history != 0
 
     @abstractmethod
-    def _save_to_memory(self, userid, history):
+    def _save_to_memory(self, chatid, history):
         pass
 
     @abstractmethod
-    def _get_from_memory(self, userid):
+    def _get_from_memory(self, chatid):
         pass
 
     @abstractmethod
-    def clear_memory(self, userid):
+    def clear_memory(self, chatid):
         pass
 
-    def get_memory(self, userid):
-        dict = self._get_from_memory(userid)
+    def get_memory(self, chatid):
+        dict = self._get_from_memory(chatid)
         if dict is None or not dict:  # Check for None and empty dictionary
             return ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=[]))
         memory_dict = self.__dict_to_message(dict)
@@ -36,15 +36,15 @@ class MemoryHistoryUtil():
         history.messages = history.messages + memory_dict
         return ConversationBufferMemory(return_messages=True, chat_memory=history)
 
-    def get_base_memory(self, userid):
-        dict = self._get_from_memory(userid)
+    def get_base_memory(self, chatid):
+        dict = self._get_from_memory(chatid)
         memory_dict = self.__dict_to_message(dict)
         return dict
 
-    def save_memory(self, userid, history: ConversationBufferMemory):
+    def save_memory(self, chatid, history: ConversationBufferMemory):
         chat_memory = history.chat_memory
         memory = self.__tuncate_memory(chat_memory)
-        self._save_to_memory(userid, memory)
+        self._save_to_memory(chatid, memory)
 
     def count_tokens_in_dict(self, memory_dict, llm):
         count = 0
@@ -83,8 +83,8 @@ class MemoryHistoryUtil():
         memory_dict.insert(0, entry)
         return memory_dict
 
-    def _get_index_key(self, userid):
-        return f'memory_{userid}'
+    def _get_index_key(self, chatid):
+        return f'memory_{chatid}'
 
     def __message_to_dict(self, history: ChatMessageHistory):
         return messages_to_dict(history.messages)

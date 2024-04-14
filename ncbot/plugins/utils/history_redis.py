@@ -12,20 +12,20 @@ class RedisMemoryHistoryUtil(MemoryHistoryUtil):
     def __init__(self) -> None:
         super().__init__()
 
-    def _save_to_memory(self, userid, history):
-        index_key = super()._get_index_key(userid)
+    def _save_to_memory(self, chatid, history):
+        index_key = super()._get_index_key(chatid)
         push_list = history[-2:]
         for ele in push_list:
             conn.rpush(index_key, json.dumps(ele))
 
-    def _get_from_memory(self, userid):
+    def _get_from_memory(self, chatid):
         if not super()._isStore():
             return None
-        index_key = super()._get_index_key(userid)
+        index_key = super()._get_index_key(chatid)
         dict_range = conn.lrange(index_key,0, -1)
         dict = [json.loads(m.decode('utf-8')) for m in dict_range]
         return dict
     
 
-    def clear_memory(self, userid):
-        conn.delete(super()._get_index_key(userid))
+    def clear_memory(self, chatid):
+        conn.delete(super()._get_index_key(chatid))

@@ -24,6 +24,7 @@ class Command:
         self.funcname = None
         self.value = None
         self.user_id = chat.user_id
+        self.chat_id = chat.chat_id
         self.user_name = chat.user_name
         if not commandstr.startswith('!'):
             return
@@ -46,7 +47,7 @@ class Command:
 
     async def execute(self):
         try:
-            return await self.func(self.user_id, self.user_name, self.value)
+            return await self.func(self.chat_id, self.user_name, self.value)
         except Exception as e:
             # Use traceback.format_exc() to get the stack trace as a string
             stack_trace = traceback.format_exc()
