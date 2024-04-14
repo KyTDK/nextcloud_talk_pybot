@@ -29,10 +29,10 @@ web_tools = toolkit.get_tools()
 
 
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
-async def chat3(chatid, username, input):
+async def chat3(conversation_token, username, input):
     history_util = get_instance()
     history = history_util.get_memory(
-        chatid).load_memory_variables({})['history']
+        conversation_token).load_memory_variables({})['history']
     duckduck_search = DuckDuckGoSearchRun()
     tools = [
         Tool(
@@ -69,5 +69,5 @@ async def chat3(chatid, username, input):
     new_history = ConversationBufferMemory(
         return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     new_history.save_context({"input": input}, {"output": response['output']})
-    history_util.save_memory(chatid, new_history)
+    history_util.save_memory(conversation_token, new_history)
     return response['output']
