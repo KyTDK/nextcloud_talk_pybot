@@ -10,7 +10,6 @@ from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 from langchain_community.utilities.pubmed import PubMedAPIWrapper
-from langchain.chains.llm_math.base import LLMMathChain
 from langchain_experimental.utilities import PythonREPL
 
 
@@ -32,7 +31,6 @@ async def chat3(conversation_token, username, input):
     wikipedia = WikipediaAPIWrapper()
     pubmed = PubMedAPIWrapper()
     python_repl = PythonREPL()
-    llm_math_chain = LLMMathChain.from_llm(llm=llm_gpt3, verbose=False)
     tools = [
         Tool(
             name="search",
@@ -63,12 +61,7 @@ async def chat3(conversation_token, username, input):
             name="python_repl",
             description="A Python shell, useful for solving complex tasks. Use this to execute python commands. Input should be a valid python command. If you want to see the output of a value, you should print it out with `print(...)`.",
             func=python_repl.run,
-            ),
-        Tool(
-            name="Calculator",
-            func=llm_math_chain.run,
-            description="useful for when you need to answer questions about math"
-        )
+            )
     ]
 
     # Get the prompt to use - you can modify this!
