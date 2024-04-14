@@ -7,11 +7,11 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
-from langchain_community.agent_toolkits import PlayWrightBrowserToolkit
-from langchain_community.tools.playwright.utils import (
-    # A synchronous browser is available, though it isn't compatible with jupyter.\n",      },
-    create_async_playwright_browser,
-)
+
+from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
+from langchain_community.utilities.pubmed import PubMedAPIWrapper
+from langchain.chains.llm_math.base import LLMMathChain
+from langchain_experimental.utilities import PythonREPL
 
 
 from datetime import datetime
@@ -23,35 +23,53 @@ model_gpt_3 = 'gpt-3.5-turbo-0125'
 
 llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 
-async_browser = create_async_playwright_browser()
-toolkit = PlayWrightBrowserToolkit.from_browser(async_browser=async_browser)
-web_tools = toolkit.get_tools()
-
-
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
 async def chat3(conversation_token, username, input):
     history_util = get_instance()
     history = history_util.get_memory(
         conversation_token).load_memory_variables({})['history']
     duckduck_search = DuckDuckGoSearchRun()
+    wikipedia = WikipediaAPIWrapper()
+    pubmed = PubMedAPIWrapper()
+    python_repl = PythonREPL()
+    llm_math_chain = LLMMathChain.from_llm(llm=llm_gpt3, verbose=False)
     tools = [
         Tool(
-            name="Search",
+            name="search",
             func=duckduck_search.run,
             description="Useful for when you need to answer questions about current events. You should ask targeted questions. As you don't know anything after 2021, you should use this tool whenever there is a chance that there is new information"
         ),
         Tool(
-            name="Datetime",
+            name="Wikipedia",
+            func=wikipedia.run,
+            description="useful when you need an answer about encyclopedic general knowledge"
+        ),
+        Tool(
+            name='PubMed',
+            func=pubmed.run, 
+            description='Useful tool for querying medical publications'
+        ),
+        Tool(
+            name="datetime",
             func=lambda x: datetime.now().isoformat(),
             description="Returns the current datetime"
         ),
         Tool(
-            name="Name",
+            name="name",
             func=lambda x: username,
             description="Retrieve the name of the user, useful for greeting them and referring to them"
+        ),
+        Tool(
+            name="python_repl",
+            description="A Python shell, useful for solving complex tasks. Use this to execute python commands. Input should be a valid python command. If you want to see the output of a value, you should print it out with `print(...)`.",
+            func=python_repl.run,
+            ),
+        Tool(
+            name="Calculator",
+            func=llm_math_chain.run,
+            description="useful for when you need to answer questions about math"
         )
     ]
-    tools += web_tools
 
     # Get the prompt to use - you can modify this!
     prompt = ChatPromptTemplate.from_messages(

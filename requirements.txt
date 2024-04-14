@@ -9,7 +9,5 @@ langchain
 redis==4.5.5
 langchain-openai
 duckduckgo-search
-playwright
-beautifulsoup4
-lxml
-nc_py_api
+wikipedia 
+langchain_experimental
