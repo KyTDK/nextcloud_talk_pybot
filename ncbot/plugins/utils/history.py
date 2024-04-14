@@ -72,6 +72,7 @@ class MemoryHistoryUtil():
         print("Tokens in history " + str(tokens_in_history))
         entry = memory_dict.pop(0)
         while tokens_in_history>self.TOKEN_LIMIT:
+            print(str(memory_dict))
             if memory_dict:
                 if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0 :  # Check if 'data' key exists
                     trunc_amount = tokens_in_history - self.TOKEN_LIMIT
