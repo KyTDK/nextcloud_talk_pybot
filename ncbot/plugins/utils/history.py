@@ -1,6 +1,4 @@
 
-from ncbot.plugins.utils.history_redis import RedisMemoryHistoryUtil
-from ncbot.plugins.utils.history_memory import InMemoryHistoryUtil
 from abc import abstractmethod
 from langchain.schema import messages_from_dict, messages_to_dict
 from langchain_openai import ChatOpenAI
@@ -93,7 +91,9 @@ class MemoryHistoryUtil():
 
     def __dict_to_message(self, load_dict):
         return messages_from_dict(load_dict)
-
+    
+from ncbot.plugins.utils.history_memory import InMemoryHistoryUtil
+from ncbot.plugins.utils.history_redis import RedisMemoryHistoryUtil
 
 in_memory_util = InMemoryHistoryUtil()
 redis_memory_util = RedisMemoryHistoryUtil()
