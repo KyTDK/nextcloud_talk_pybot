@@ -6,8 +6,7 @@ from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.memory import ConversationSummaryBufferMemory
-from langchain.memory.chat_memory import ChatMessageHistory
+from langchain.memory import ConversationSummaryBufferMemory, ConversationSummaryMemory
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
@@ -84,6 +83,6 @@ async def chat3(conversation_token, username, input):
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, memory=summarized_buffer)
     response = await agent_executor.ainvoke({"input": input}, verbose=True)
     
-
+    print("Sum "+str(summarized_buffer.buffer))
     history_util.save_memory(conversation_token, summarized_buffer.buffer)
     return response['output']
