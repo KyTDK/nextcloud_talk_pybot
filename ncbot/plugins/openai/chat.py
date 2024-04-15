@@ -79,7 +79,7 @@ async def chat3(conversation_token, username, input):
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
     summarized_buffer = ConversationSummaryBufferMemory(llm=llm_gpt3, max_token_limit=ncconfig.cf.max_chat_history, return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     summarized_buffer.save_context({"input": input}, {"output": response['output']})
-    summarized_history = await summarized_buffer.aload_memory_variables({})
+    summarized_history = summarized_buffer.load_memory_variables({})
     print(str(summarized_history))
     new_history = ConversationBufferMemory(
         return_messages=True, chat_memory=ChatMessageHistory(messages=summarized_history['history']))
