@@ -45,7 +45,7 @@ class MemoryHistoryUtil():
     #     self._save_to_memory(conversation_token, memory)
 
     def save_memory(self, conversation_token, history: str):
-        self._save_to_memory(conversation_token, history)
+        self._save_to_memory(conversation_token, self.__tuncate_memory(history))
 
     def count_tokens_in_dict(self, memory_dict, llm):
         count = 0
