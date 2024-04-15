@@ -12,11 +12,15 @@ class RedisMemoryHistoryUtil(MemoryHistoryUtil):
     def __init__(self) -> None:
         super().__init__()
 
-    def _save_to_memory(self, conversation_token, history):
+    # def _save_to_memory(self, conversation_token, history):
+    #     index_key = super()._get_index_key(conversation_token)
+    #     push_list = history[-2:]
+    #     for ele in push_list:
+    #         conn.rpush(index_key, json.dumps(ele))
+
+    def _save_to_memory(self, conversation_token, summary):
         index_key = super()._get_index_key(conversation_token)
-        push_list = history[-2:]
-        for ele in push_list:
-            conn.rpush(index_key, json.dumps(ele))
+        conn.rpush(index_key, summary)
 
     def _get_from_memory(self, conversation_token):
         if not super()._isStore():
