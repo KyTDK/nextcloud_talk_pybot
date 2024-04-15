@@ -7,12 +7,11 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
-from langchain.memory import ChatMessageHistory, ConversationSummaryMemory
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 from langchain_community.utilities.pubmed import PubMedAPIWrapper
 from langchain_experimental.utilities import PythonREPL
-import ncbot.config as ncconfig
+
 
 from datetime import datetime
 
@@ -77,13 +76,9 @@ async def chat3(conversation_token, username, input):
     agent = create_openai_tools_agent(llm_gpt3, tools, prompt)
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    print("History before: "+str(history))
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
-    summarized_buffer = ConversationSummaryMemory(llm=llm_gpt3, return_messages=True, chat_memory=ChatMessageHistory(messages=history))
-    summarized_buffer.save_context({"input": input}, {"output": response['output']})
-    summarized_history = await summarized_buffer.aload_memory_variables({})
-    print("History after: "+str(summarized_history))
     new_history = ConversationBufferMemory(
-        return_messages=True, chat_memory=ChatMessageHistory(messages=summarized_history['history']))
+        return_messages=True, chat_memory=ChatMessageHistory(messages=history))
+    new_history.save_context({"input": input}, {"output": response['output']})
     history_util.save_memory(conversation_token, new_history)
     return response['output']
