@@ -67,6 +67,7 @@ class MemoryHistoryUtil():
             if memory_dict:
                 # Check if 'data' key exists
                 if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0:
+                    print(content)
                     trunc_amount = tokens_in_history - TOKEN_LIMIT
                     content = entry['data']['content']
                     if len(content) <= trunc_amount:
