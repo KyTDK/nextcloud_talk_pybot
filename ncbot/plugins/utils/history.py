@@ -58,6 +58,7 @@ class MemoryHistoryUtil():
 
     def __tuncate_memory(self, history):
         memory_dict = self.__message_to_dict(history)
+        print(str(memory_dict))
         #No implementation
         return memory_dict
 
