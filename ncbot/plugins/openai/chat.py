@@ -78,13 +78,9 @@ async def chat3(conversation_token, username, input):
     agent = create_openai_tools_agent(llm_gpt3, tools, prompt)
     # Create an agent executor by passing in the agent and tools
 
-    current_dialogue = ChatMessageHistory()
-    current_dialogue.add_user_message(input)
-    current_dialogue.add_ai_message(response['output'])
-
     previous_summary = history_util.get_memory(conversation_token)
 
-    summarized_buffer = ConversationSummaryBufferMemory(llm=llm_gpt3, max_token_limit=ncconfig.cf.max_chat_history, chat_memory=current_dialogue, buffer=previous_summary, return_messages=True)
+    summarized_buffer = ConversationSummaryBufferMemory(llm=llm_gpt3, max_token_limit=ncconfig.cf.max_chat_history, buffer=previous_summary, return_messages=True)
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, memory=summarized_buffer)
     response = await agent_executor.ainvoke({"input": input}, verbose=True)
     
