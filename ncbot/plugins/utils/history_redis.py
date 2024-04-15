@@ -13,6 +13,7 @@ class RedisMemoryHistoryUtil(MemoryHistoryUtil):
         super().__init__()
 
     def _save_to_memory(self, conversation_token, history):
+        self.clear_memory(conversation_token)
         index_key = super()._get_index_key(conversation_token)
         push_list = history[-2:]
         for ele in push_list:
