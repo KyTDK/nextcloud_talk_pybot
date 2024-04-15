@@ -30,6 +30,11 @@ class RedisMemoryHistoryUtil(MemoryHistoryUtil):
         dict = [json.loads(m.decode('utf-8')) for m in dict_range]
         return dict
     
+    def _get_from_memory(self, conversation_token):
+        if not super()._isStore():
+            return None
+        index_key = super()._get_index_key(conversation_token)
+        return conn.get(index_key)
 
     def clear_memory(self, conversation_token):
         conn.delete(super()._get_index_key(conversation_token))
