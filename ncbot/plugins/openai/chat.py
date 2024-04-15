@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.memory import ConversationSummaryBufferMemory
+from langchain.memory import ConversationSummaryBufferMemory, ConversationBufferMemory
 from langchain.memory.chat_memory import ChatMessageHistory
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
@@ -26,7 +26,7 @@ llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
 async def chat3(conversation_token, username, input):
     history_util = get_instance()
-    history = history_util.get_memory(llm_gpt3, conversation_token).load_memory_variables({})['history']
+    history = history_util.get_memory(conversation_token).load_memory_variables({})['history']
     duckduck_search = DuckDuckGoSearchRun()
     wikipedia = WikipediaAPIWrapper()
     pubmed = PubMedAPIWrapper()
@@ -77,7 +77,10 @@ async def chat3(conversation_token, username, input):
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
-    new_history = ConversationSummaryBufferMemory(llm=llm_gpt3, chat_memory=ChatMessageHistory(messages=history), max_token_limit=ncconfig.cf.max_chat_history, return_messages=True)
-    new_history.save_context({"input": input}, {"output": response['output']})
+    summarized_buffer = ConversationSummaryBufferMemory(llm=llm_gpt3, chat_memory=ChatMessageHistory(messages=history), max_token_limit=ncconfig.cf.max_chat_history, return_messages=True)
+    summarized_buffer.save_context({"input": input}, {"output": response['output']})
+    summarized_history_map = summarized_buffer.load_memory_variables({})['history']
+    new_history = ConversationBufferMemory(
+        return_messages=True, chat_memory=ChatMessageHistory(messages=summarized_history_map))
     history_util.save_memory(conversation_token, new_history)
     return response['output']
