@@ -62,7 +62,6 @@ class MemoryHistoryUtil():
         # truncate token amount
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
         tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
-        print("Before: "+str(memory_dict))
         entry = memory_dict.pop(0)
         while tokens_in_history > TOKEN_LIMIT:
             if memory_dict:
@@ -82,7 +81,6 @@ class MemoryHistoryUtil():
             else:
                 break
         memory_dict.insert(0, entry)
-        print("After: "+str(memory_dict))
         return memory_dict
 
     def _get_index_key(self, conversation_token):
