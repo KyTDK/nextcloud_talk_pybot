@@ -7,6 +7,7 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationSummaryBufferMemory
+from langchain.memory.chat_memory import ChatMessageHistory
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 from langchain_community.utilities.pubmed import PubMedAPIWrapper
@@ -76,8 +77,7 @@ async def chat3(conversation_token, username, input):
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
-    new_history = ConversationSummaryBufferMemory(llm=llm_gpt3, max_token_limit=ncconfig.cf.max_chat_history, return_messages=True)
-    new_history.aload_memory_variables(history_util.get_base_memory(conversation_token))
+    new_history = ConversationSummaryBufferMemory(llm=llm_gpt3, chat_memory=ChatMessageHistory(messages=history), max_token_limit=ncconfig.cf.max_chat_history, return_messages=True)
     new_history.save_context({"input": input}, {"output": response['output']})
     history_util.save_memory(conversation_token, new_history)
     return response['output']
