@@ -77,7 +77,7 @@ async def chat3(conversation_token, username, input):
     agent = create_openai_tools_agent(llm_gpt3, tools, prompt)
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    print("History after: "+str(history))
+    print("History before: "+str(history))
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
     summarized_buffer = ConversationSummaryMemory(llm=llm_gpt3, return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     summarized_buffer.save_context({"input": input}, {"output": response['output']})
