@@ -77,14 +77,17 @@ async def chat3(conversation_token, username, input):
     # Construct the OpenAI Tools agent
     agent = create_openai_tools_agent(llm_gpt3, tools, prompt)
     # Create an agent executor by passing in the agent and tools
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    previous_summary = history_util.get_memory(conversation_token)
-    response = await agent_executor.ainvoke({"input": input, "history": [SystemMessage(content=str(previous_summary))]}, verbose=True)
-    
+
     current_dialogue = ChatMessageHistory()
     current_dialogue.add_user_message(input)
     current_dialogue.add_ai_message(response['output'])
 
-    summarized_buffer = ConversationSummaryBufferMemory(llm=llm_gpt3, max_token_limit=ncconfig.cf.max_chat_history, return_messages=True)
-    history_util.save_memory(conversation_token, summarized_buffer.predict_new_summary(current_dialogue, previous_summary))
+    previous_summary = history_util.get_memory(conversation_token)
+
+    summarized_buffer = ConversationSummaryBufferMemory(llm=llm_gpt3, max_token_limit=ncconfig.cf.max_chat_history, chat_memory=current_dialogue, buffer=previous_summary, return_messages=True)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, memory=summarized_buffer)
+    response = await agent_executor.ainvoke({"input": input}, verbose=True)
+    
+
+    history_util.save_memory(conversation_token, summarized_buffer.buffer)
     return response['output']
