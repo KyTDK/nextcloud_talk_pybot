@@ -1,8 +1,8 @@
 
 from abc import abstractmethod
 from langchain.schema import messages_from_dict, messages_to_dict
-from langchain_openai import ChatOpenAI
-from langchain.memory import ConversationBufferMemory, ChatMessageHistory
+from langchain.memory import ConversationSummaryBufferMemory
+from langchain.memory import ChatMessageHistory
 import ncbot.config as ncconfig
 
 
@@ -30,18 +30,18 @@ class MemoryHistoryUtil():
     def get_memory(self, conversation_token):
         dict = self._get_from_memory(conversation_token)
         if dict is None or not dict:  # Check for None and empty dictionary
-            return ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=[]))
+            return ConversationSummaryBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=[]))
         memory_dict = self.__dict_to_message(dict)
         history = ChatMessageHistory()
         history.messages = history.messages + memory_dict
-        return ConversationBufferMemory(return_messages=True, chat_memory=history)
+        return ConversationSummaryBufferMemory(return_messages=True, chat_memory=history)
 
     def get_base_memory(self, conversation_token):
         dict = self._get_from_memory(conversation_token)
         memory_dict = self.__dict_to_message(dict)
         return memory_dict
 
-    def save_memory(self, conversation_token, history: ConversationBufferMemory):
+    def save_memory(self, conversation_token, history: ConversationSummaryBufferMemory):
         chat_memory = history.chat_memory
         memory = self.__tuncate_memory(chat_memory)
         self._save_to_memory(conversation_token, memory)
