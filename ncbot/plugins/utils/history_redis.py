@@ -15,8 +15,7 @@ class RedisMemoryHistoryUtil(MemoryHistoryUtil):
     def _save_to_memory(self, conversation_token, history):
         self.clear_memory(conversation_token)
         index_key = super()._get_index_key(conversation_token)
-        push_list = history[-2:]
-        for ele in push_list:
+        for ele in history:
             conn.rpush(index_key, json.dumps(ele))
 
     # def _save_to_memory(self, conversation_token, summary):
