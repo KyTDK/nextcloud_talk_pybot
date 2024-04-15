@@ -25,8 +25,7 @@ llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
 async def chat3(conversation_token, username, input):
     history_util = get_instance()
-    history = history_util.get_memory(llm_gpt3,
-        conversation_token).load_memory_variables({})['history']
+    history = history_util.get_memory(conversation_token).load_memory_variables({})['history']
     duckduck_search = DuckDuckGoSearchRun()
     wikipedia = WikipediaAPIWrapper()
     pubmed = PubMedAPIWrapper()
