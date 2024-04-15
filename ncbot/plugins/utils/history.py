@@ -39,7 +39,7 @@ class MemoryHistoryUtil():
     def get_base_memory(self, conversation_token):
         dict = self._get_from_memory(conversation_token)
         memory_dict = self.__dict_to_message(dict)
-        return dict
+        return memory_dict
 
     def save_memory(self, conversation_token, history: ConversationBufferMemory):
         chat_memory = history.chat_memory
