@@ -76,7 +76,6 @@ class MemoryHistoryUtil():
                     entry['data']['content'] = content
                     tokens_in_history = llm_gpt3.get_num_tokens(
                         content)+self.count_tokens_in_dict(memory_dict, llm_gpt3)
-                    print(content)
                 else:
                     entry = memory_dict.pop(0)
             else:
