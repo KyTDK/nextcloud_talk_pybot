@@ -30,7 +30,7 @@ class MemoryHistoryUtil():
     def get_memory(self, conversation_token):
         dict = self._get_from_memory(conversation_token)
         if dict is None or not dict:  # Check for None and empty dictionary
-            return ConversationSummaryBufferMemory(chat_memory=ChatMessageHistory(messages=[]))
+            return ConversationSummaryBufferMemory()
         memory_dict = self.__dict_to_message(dict)
         history = ChatMessageHistory()
         history.messages = history.messages + memory_dict
