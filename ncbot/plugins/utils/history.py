@@ -41,10 +41,13 @@ class MemoryHistoryUtil():
         memory_dict = self.__dict_to_message(dict)
         return dict
 
-    def save_memory(self, conversation_token, history: ConversationBufferMemory):
-        chat_memory = history.chat_memory
-        memory = self.__tuncate_memory(chat_memory)
-        self._save_to_memory(conversation_token, memory)
+    # def save_memory(self, conversation_token, history: ConversationBufferMemory):
+    #     chat_memory = history.chat_memory
+    #     memory = self.__tuncate_memory(chat_memory)
+    #     self._save_to_memory(conversation_token, memory)
+
+    def save_memory(self, conversation_token, history: str):
+        self._save_to_memory(conversation_token, history)
 
     def count_tokens_in_dict(self, memory_dict, llm):
         count = 0
