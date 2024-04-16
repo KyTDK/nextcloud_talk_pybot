@@ -58,12 +58,14 @@ class MemoryHistoryUtil():
         return count
 
     def __tuncate_memory(self, history):
+        print("Before: "+str(history))
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
         token_amount = llm_gpt3.get_num_tokens(history)
         TOKEN_LIMIT = ncconfig.cf.max_chat_history
         while token_amount > TOKEN_LIMIT:
             history = history[(token_amount-TOKEN_LIMIT):]
             token_amount = llm_gpt3.get_num_tokens(history)
+        print("After: "+str(history))
         return history
 
     def _get_index_key(self, conversation_token):
