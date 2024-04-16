@@ -34,7 +34,7 @@ async def chat3(conversation_token, username, input):
         Tool(
             name="search",
             func=duckduck_search.run,
-            description="Useful for when you need to answer questions about current events. You should ask targeted questions. As you don't know anything after 2021, you should use this tool whenever there is a chance that there is new information"
+            description="Get up-to-date information from the internet. You should use this almost always when answering questions to ensure you provide the latest information."
         ),
         Tool(
             name="Wikipedia",
