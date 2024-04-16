@@ -52,9 +52,9 @@ async def chat3(conversation_token, username, input):
             description="Returns the current datetime"
         ),
         Tool(
-            name="name",
+            name="human_name",
             func=lambda x: username,
-            description="Retrieve the name of the user, useful for greeting them and referring to them"
+            description="Retrieve the name of the human, useful for greeting them and referring to them"
         ),
         Tool(
             name="python_repl",
