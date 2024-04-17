@@ -22,10 +22,13 @@ model_gpt_3 = 'gpt-3.5-turbo-0125'
 
 llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 
-def clear_and_reset_history(history_util, history, conversation_token):
-  history_util.clear_memory(conversation_token)
-  history = ""
-  return  # Optional, functions can implicitly return the last evaluated expression
+reset=False
+
+def set_reset():
+  global reset  # Use `global` to access a variable from the enclosing scope
+  reset = True
+
+reset_lambda = lambda x: set_reset()  # Call the set_reset function
 
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
 async def chat3(conversation_token, username, input):
@@ -70,7 +73,7 @@ async def chat3(conversation_token, username, input):
         Tool(
             name="forget",
             description="Clear AI's memory, forgets what everyone has said",
-            func=lambda x: clear_and_reset_history(history_util, history, conversation_token)
+            func=lambda x: set_reset()
         )
     ]
 
@@ -87,6 +90,8 @@ async def chat3(conversation_token, username, input):
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
+    if reset:
+       history=""
     new_history = ConversationBufferMemory(
         return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     new_history.save_context({"input": input}, {"output": response['output']})
