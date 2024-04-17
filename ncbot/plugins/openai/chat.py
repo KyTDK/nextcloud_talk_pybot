@@ -70,7 +70,7 @@ async def chat3(conversation_token, username, input):
         Tool(
             name="forget",
             description="Clear AI's memory, forgets what everyone has said",
-            func=lambda x: clear_and_reset_history(history_util=history_util, history=history, conversation_token=conversation_token)
+            func=lambda x: clear_and_reset_history(history_util, history, conversation_token)
         )
     ]
 
