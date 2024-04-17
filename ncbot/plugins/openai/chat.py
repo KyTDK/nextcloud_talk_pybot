@@ -6,13 +6,12 @@ from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.memory import ConversationSummaryBufferMemory, ConversationSummaryMemory
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 from langchain_community.utilities.pubmed import PubMedAPIWrapper
 from langchain_experimental.utilities import PythonREPL
-import ncbot.config as ncconfig
+
 
 from datetime import datetime
 
@@ -26,6 +25,8 @@ llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
 async def chat3(conversation_token, username, input):
     history_util = get_instance()
+    history = history_util.get_memory(
+        conversation_token).load_memory_variables({})['history']
     duckduck_search = DuckDuckGoSearchRun()
     wikipedia = WikipediaAPIWrapper()
     pubmed = PubMedAPIWrapper()
@@ -74,13 +75,10 @@ async def chat3(conversation_token, username, input):
     # Construct the OpenAI Tools agent
     agent = create_openai_tools_agent(llm_gpt3, tools, prompt)
     # Create an agent executor by passing in the agent and tools
-
-    previous_summary = history_util.get_memory(conversation_token)
-
-    summarized_buffer = ConversationSummaryMemory(llm=llm_gpt3, max_token_limit=ncconfig.cf.max_chat_history, buffer=str(previous_summary), return_messages=True)
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, memory=summarized_buffer)
-    response = await agent_executor.ainvoke({"input": input}, verbose=True)
-    
-    print("Sum "+str(summarized_buffer.buffer))
-    history_util.save_memory(conversation_token, summarized_buffer.buffer)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+    response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
+    new_history = ConversationBufferMemory(
+        return_messages=True, chat_memory=ChatMessageHistory(messages=history))
+    new_history.save_context({"input": input}, {"output": response['output']})
+    history_util.save_memory(conversation_token, new_history)
     return response['output']

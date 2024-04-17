@@ -27,25 +27,25 @@ class MemoryHistoryUtil():
     def clear_memory(self, conversation_token):
         pass
 
-    # def get_memory(self, conversation_token):
-    #     dict = self._get_from_memory(conversation_token)
-    #     if dict is None or not dict:  # Check for None and empty dictionary
-    #         return ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=[]))
-    #     memory_dict = self.__dict_to_message(dict)
-    #     history = ChatMessageHistory()
-    #     history.messages = history.messages + memory_dict
-    #     return ConversationBufferMemory(return_messages=True, chat_memory=history)
-
     def get_memory(self, conversation_token):
-        return self._get_from_memory(conversation_token)
-        
-    # def save_memory(self, conversation_token, history: ConversationBufferMemory):
-    #     chat_memory = history.chat_memory
-    #     memory = self.__tuncate_memory(chat_memory)
-    #     self._save_to_memory(conversation_token, memory)
+        dict = self._get_from_memory(conversation_token)
+        if dict is None or not dict:  # Check for None and empty dictionary
+            return ConversationBufferMemory(return_messages=True, chat_memory=ChatMessageHistory(messages=[]))
+        memory_dict = self.__dict_to_message(dict)
+        history = ChatMessageHistory()
+        history.messages = history.messages + memory_dict
+        return ConversationBufferMemory(return_messages=True, chat_memory=history)
 
-    def save_memory(self, conversation_token, history: str):
-        self._save_to_memory(conversation_token, history)
+    # def get_memory(self, conversation_token):
+    #     return self._get_from_memory(conversation_token)
+        
+    def save_memory(self, conversation_token, history: ConversationBufferMemory):
+        chat_memory = history.chat_memory
+        memory = self.__tuncate_memory(chat_memory)
+        self._save_to_memory(conversation_token, memory)
+
+    # def save_memory(self, conversation_token, history: str):
+    #     self._save_to_memory(conversation_token, history)
 
     def count_tokens_in_dict(self, memory_dict, llm):
         count = 0
@@ -57,10 +57,37 @@ class MemoryHistoryUtil():
                     count += llm.get_num_tokens(content)
         return count
 
+    # def __tuncate_memory(self, history):
+    #     llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
+    #     token_amount = llm_gpt3.get_num_tokens(history)
+    
     def __tuncate_memory(self, history):
+        TOKEN_LIMIT = self.max_chat_history
+        memory_dict = self.__message_to_dict(history)
+        # truncate token amount
         llm_gpt3 = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0125")
-        token_amount = llm_gpt3.get_num_tokens(history)
-
+        tokens_in_history = self.count_tokens_in_dict(memory_dict, llm_gpt3)
+        entry = memory_dict.pop(0)
+        while tokens_in_history > TOKEN_LIMIT:
+            if memory_dict:
+                # Check if 'data' key exists
+                if entry.get('data').get('content') and len(entry.get('data').get('content')) != 0:
+                    trunc_amount = tokens_in_history - TOKEN_LIMIT
+                    content = entry['data']['content']
+                    if len(content) <= trunc_amount:
+                        content = ""  # Delete the whole string
+                    else:
+                        content = content[trunc_amount:]  # truncate
+                    entry['data']['content'] = content
+                    tokens_in_history = llm_gpt3.get_num_tokens(
+                        content)+self.count_tokens_in_dict(memory_dict, llm_gpt3)
+                else:
+                    entry = memory_dict.pop(0)
+            else:
+                break
+        memory_dict.insert(0, entry)
+        return memory_dict
+    
     def _get_index_key(self, conversation_token):
         return f'memory_{conversation_token}'
 
