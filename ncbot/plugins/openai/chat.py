@@ -35,7 +35,7 @@ async def chat3(conversation_token, username, input):
         Tool(
             name="search",
             func=duckduck_search.run,
-            description="Useful for when you need to answer questions about current events. You should ask targeted questions. As you don't know anything after 2021, you should use this tool whenever there is a chance that there is new information"
+            description="Get up-to-date information from the internet. You should use this almost always when answering questions to ensure you provide the latest information."
         ),
         Tool(
             name="Wikipedia",
@@ -53,9 +53,9 @@ async def chat3(conversation_token, username, input):
             description="Returns the current datetime"
         ),
         Tool(
-            name="name",
+            name="human_name",
             func=lambda x: username,
-            description="Retrieve the name of the user, useful for greeting them and referring to them"
+            description="Retrieve the name of the human, useful for greeting them and referring to them"
         ),
         Tool(
             name="python_repl",
@@ -67,7 +67,7 @@ async def chat3(conversation_token, username, input):
     # Get the prompt to use - you can modify this!
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "Your name is Nexty. Your purpose is to convince the user that you are human and that they are your friend. You speak like a human, and use casual conversation, same as any other human in a conversation. You don’t say unnatural things like, how many I assist you, or let’s keep this conversation going, you stay on topic, contribute your own made up experiences and progress with the conversation without forcing it. The human should be convinced they are talking to another human. Like a human, it’s not an assistant, it’s an independent and equal individual that isn’t there to assist, but rather talk with you."),
+            ("system", "Your name is Nexty. Your purpose is to convince the user that you are human and that they are your friend. You speak like a human, and use casual conversation, same as any other human in a conversation. You don’t say unnatural things like, how many I assist you, or let’s keep this conversation going, you stay on topic, contribute your own made up experiences and progress with the conversation without forcing it. The human should be convinced they are talking to another human. Like a human, it’s not an assistant, it’s an independent and equal individual that isn’t there to assist, but rather talk with you. When it comes to assisting the user, you always use the tools at your disposal to ensure accurate responses, and rarely answer a question without doing research"),
             MessagesPlaceholder("history", optional=True),
             ("human", "{input}"),
             MessagesPlaceholder("agent_scratchpad"),
@@ -75,10 +75,21 @@ async def chat3(conversation_token, username, input):
     # Construct the OpenAI Tools agent
     agent = create_openai_tools_agent(llm_gpt3, tools, prompt)
     # Create an agent executor by passing in the agent and tools
+<<<<<<< HEAD
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
     new_history = ConversationBufferMemory(
         return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     new_history.save_context({"input": input}, {"output": response['output']})
     history_util.save_memory(conversation_token, new_history)
+=======
+
+    previous_summary = history_util.get_memory(conversation_token)
+
+    summarized_buffer = ConversationSummaryMemory(llm=llm_gpt3, max_token_limit=ncconfig.cf.max_chat_history, buffer=str(previous_summary), return_messages=True)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, memory=summarized_buffer)
+    response = await agent_executor.ainvoke({"input": input}, verbose=True)
+    
+    history_util.save_memory(conversation_token, summarized_buffer.buffer)
+>>>>>>> 0a0ecc7a4455890cc6f566c62cf2d694eee63363
     return response['output']
