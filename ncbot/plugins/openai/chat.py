@@ -92,6 +92,7 @@ async def chat3(conversation_token, username, input):
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
     if reset:
        history=[]
+       reset=False
     new_history = ConversationBufferMemory(
         return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     new_history.save_context({"input": input}, {"output": response['output']})
