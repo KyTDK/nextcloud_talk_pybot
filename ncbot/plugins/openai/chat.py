@@ -61,7 +61,12 @@ async def chat3(conversation_token, username, input):
             name="python_repl",
             description="A Python shell, useful for solving complex tasks. Use this to execute python commands. Input should be a valid python command. If you want to see the output of a value, you should print it out with `print(...)`.",
             func=python_repl.run,
-            )
+            ),
+        Tool(
+            name="forget",
+            description="Clear AI's memory, forgets what everyone has said",
+            func=lambda x: history_util.clear_memory()
+        )
     ]
 
     # Get the prompt to use - you can modify this!
