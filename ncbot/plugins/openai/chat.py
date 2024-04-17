@@ -24,9 +24,9 @@ llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
 
 reset=False
 
-def set_reset():
+def set_reset(value):
   global reset  # Use `global` to access a variable from the enclosing scope
-  reset = True
+  reset = value
 
 reset_lambda = lambda x: set_reset()  # Call the set_reset function
 
@@ -73,7 +73,7 @@ async def chat3(conversation_token, username, input):
         Tool(
             name="forget",
             description="Clear AI's memory, forgets what everyone has said",
-            func=lambda x: set_reset()
+            func=lambda x: set_reset(True)
         )
     ]
 
@@ -90,10 +90,9 @@ async def chat3(conversation_token, username, input):
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
-    global reset
     if reset:
        history=[]
-        reset=False
+        set_reset(False)
     new_history = ConversationBufferMemory(
         return_messages=True, chat_memory=ChatMessageHistory(messages=history))
     new_history.save_context({"input": input}, {"output": response['output']})
