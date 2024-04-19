@@ -37,11 +37,16 @@ async def chat3(conversation_token, username, input):
     history_util = get_instance()
     history = history_util.get_memory(
         conversation_token).load_memory_variables({})['history']
-    duckduck_search = DuckDuckGoSearchRun()
+    search = SearxSearchWrapper(searx_host="http://127.0.0.1:8888")
     wikipedia = WikipediaAPIWrapper()
     pubmed = PubMedAPIWrapper()
     python_repl = PythonREPL()
     tools = [
+      Tool(
+            name = "Search",
+            func=search.run,
+            description="useful for when you need to answer questions about current events. You should ask targeted questions"
+        ),
         Tool(
             name="Wikipedia",
             func=wikipedia.run,
