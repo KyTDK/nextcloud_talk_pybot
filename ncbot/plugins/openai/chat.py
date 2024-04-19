@@ -37,7 +37,7 @@ async def chat3(conversation_token, username, input):
     history_util = get_instance()
     history = history_util.get_memory(
         conversation_token).load_memory_variables({})['history']
-    search = SearxSearchWrapper(searx_host="http://0.0.0.0:8888")
+    search = SearxSearchWrapper(searx_host="http://127.0.0.1:8888")
     wikipedia = WikipediaAPIWrapper()
     pubmed = PubMedAPIWrapper()
     python_repl = PythonREPL()
