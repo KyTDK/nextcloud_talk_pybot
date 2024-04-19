@@ -77,7 +77,6 @@ async def chat3(conversation_token, username, input):
             description="Clear AI's memory, forgets what everyone has said",
             func=lambda x: set_reset(True)
         ),
-        TavilySearchResults()
     ]
 
     # Get the prompt to use - you can modify this!
