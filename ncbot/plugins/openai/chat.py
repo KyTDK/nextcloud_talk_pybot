@@ -7,6 +7,8 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
+from langchain_community.tools.tavily_search import TavilySearchResults
+
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 from langchain_community.utilities.pubmed import PubMedAPIWrapper
@@ -41,11 +43,6 @@ async def chat3(conversation_token, username, input):
     python_repl = PythonREPL()
     tools = [
         Tool(
-            name="search",
-            func=duckduck_search.run,
-            description="Get up-to-date information from the internet. You should use this almost always when answering questions to ensure you provide the latest information."
-        ),
-        Tool(
             name="Wikipedia",
             func=wikipedia.run,
             description="useful when you need an answer about encyclopedic general knowledge"
@@ -74,7 +71,8 @@ async def chat3(conversation_token, username, input):
             name="forget",
             description="Clear AI's memory, forgets what everyone has said",
             func=lambda x: set_reset(True)
-        )
+        ),
+        TavilySearchResults()
     ]
 
     # Get the prompt to use - you can modify this!
