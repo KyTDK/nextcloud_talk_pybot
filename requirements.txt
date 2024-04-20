@@ -11,5 +11,5 @@ langchain-openai
 duckduckgo-search
 wikipedia 
 langchain_experimental
-xmltodic
+xmltodict
 html2text
