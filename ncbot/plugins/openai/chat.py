@@ -31,8 +31,13 @@ def set_reset(value):
   global reset  # Use `global` to access a variable from the enclosing scope
   reset = value
 
-reset_lambda = lambda x: set_reset()  # Call the set_reset function
-
+def scrape(urls):
+  loader = AsyncHtmlLoader(urls)
+  docs = loader.load()
+  html2text = Html2TextTransformer()
+  docs_transformed = html2text.transform_documents(docs)
+  return docs_transformed
+  
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
 async def chat3(conversation_token, username, input):
     history_util = get_instance()
@@ -77,6 +82,11 @@ async def chat3(conversation_token, username, input):
             name="forget",
             description="Clear AI's memory, forgets what everyone has said",
             func=lambda x: set_reset(True)
+        ),
+        Tool(
+            name="scrape",
+            description="Scrape and return text for a specific url",
+            func=scrape,
         ),
     ]
 
