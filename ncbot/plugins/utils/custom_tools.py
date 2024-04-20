@@ -10,7 +10,7 @@ from langchain.callbacks.manager import (
 )
 
 class ScrapeInput(BaseModel):
-    url: List[str] = Field(description="URL to scrape")
+    urls: List[str] = Field(description="URL to scrape")
 
 
 class ScrapeTool(BaseTool):
