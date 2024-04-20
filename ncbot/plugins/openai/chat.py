@@ -36,7 +36,7 @@ def scrape(urls):
   docs = loader.load()
   html2text = Html2TextTransformer()
   docs_transformed = html2text.transform_documents(docs)
-  return docs_transformed
+  return docs_transformed[0].page_content[0:500]
   
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
 async def chat3(conversation_token, username, input):
