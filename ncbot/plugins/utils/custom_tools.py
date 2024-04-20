@@ -17,7 +17,7 @@ class ScrapeTool(BaseTool):
     name = "Scrape"
     description = "Scrape and return text for a specific url. Always return your sources and the urls scraped"
     args_schema: Type[BaseModel] = ScrapeInput
-    return_direct: bool = True
+    return_direct: bool = False
 
     def _run(
         self, urls: List[str], run_manager: Optional[CallbackManagerForToolRun] = None
