@@ -1,15 +1,14 @@
 import ncbot.command.base as base
 
 from ncbot.plugins.utils.history import get_instance
+from ncbot.plugins.utils.custom_tools import ScrapeTool
 
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
-from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 from langchain_community.utilities import SearxSearchWrapper
-from langchain_community.document_loaders import AsyncChromiumLoader
-from langchain_community.document_transformers import Html2TextTransformer
+
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 from langchain_community.utilities.pubmed import PubMedAPIWrapper
@@ -83,11 +82,7 @@ async def chat3(conversation_token, username, input):
             description="Clear AI's memory, forgets what everyone has said",
             func=lambda x: set_reset(True)
         ),
-        Tool(
-            name="scrape",
-            description="Scrape and return text for a specific url. Always return your sources and the urls scraped",
-            func=await scrape,
-        ),
+        ScrapeTool
     ]
 
     # Get the prompt to use - you can modify this!
