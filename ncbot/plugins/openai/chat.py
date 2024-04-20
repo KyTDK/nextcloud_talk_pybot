@@ -31,9 +31,9 @@ def set_reset(value):
   global reset  # Use `global` to access a variable from the enclosing scope
   reset = value
 
-def scrape(urls):
+async def scrape(urls):
   loader = AsyncChromiumLoader(urls)
-  docs = loader.load()
+  docs = await loader.aload()
   html2text = Html2TextTransformer()
   docs_transformed = html2text.transform_documents(docs)
   return docs_transformed[0].page_content[0:500]
