@@ -9,7 +9,6 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 
 
-from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 from langchain_community.utilities.pubmed import PubMedAPIWrapper
 from langchain_experimental.utilities import PythonREPL
 
@@ -35,7 +34,6 @@ async def chat3(conversation_token, username, input):
     history_util = get_instance()
     history = history_util.get_memory(
         conversation_token).load_memory_variables({})['history']
-    wikipedia = WikipediaAPIWrapper()
     pubmed = PubMedAPIWrapper()
     python_repl = PythonREPL()
     scrape = ScrapeTool()
