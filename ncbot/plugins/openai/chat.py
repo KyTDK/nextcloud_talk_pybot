@@ -43,7 +43,7 @@ async def chat3(conversation_token, username, input):
     scrape = ScrapeTool()
     tools = [
       Tool(
-            name = "Search",
+            name="Search",
             func=search.results,
             description="useful for when you need to answer questions about current events. You should ask targeted questions"
         ),
