@@ -30,13 +30,7 @@ def set_reset(value):
   global reset  # Use `global` to access a variable from the enclosing scope
   reset = value
 
-async def scrape(urls):
-  loader = AsyncChromiumLoader(urls)
-  docs = await loader.aload()
-  html2text = Html2TextTransformer()
-  docs_transformed = html2text.transform_documents(docs)
-  return docs_transformed[0].page_content[0:500]
-  
+
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
 async def chat3(conversation_token, username, input):
     history_util = get_instance()
@@ -46,6 +40,7 @@ async def chat3(conversation_token, username, input):
     wikipedia = WikipediaAPIWrapper()
     pubmed = PubMedAPIWrapper()
     python_repl = PythonREPL()
+    scrape = ScrapeTool()
     tools = [
       Tool(
             name = "Search",
@@ -82,7 +77,7 @@ async def chat3(conversation_token, username, input):
             description="Clear AI's memory, forgets what everyone has said",
             func=lambda x: set_reset(True)
         ),
-        ScrapeTool
+        scrape
     ]
 
     # Get the prompt to use - you can modify this!
