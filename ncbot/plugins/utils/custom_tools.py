@@ -45,7 +45,7 @@ class SearchInput(BaseModel):
 
 class SearchTool(BaseTool):
     name = "Search"
-    description = "Useful for when you need to answer questions about current events. You should ask targeted questions. Returns URLs and snippets of websites."
+    description = "Browse the internet to return URLs and snippets of websites. Useful for when you need to answer questions about current events. You should ask targeted questions.  Always return your sources and urls of websites."
     args_schema: Type[BaseModel] = SearchInput
     return_direct: bool = False
 
