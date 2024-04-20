@@ -44,7 +44,7 @@ async def chat3(conversation_token, username, input):
     tools = [
       Tool(
             name = "Search",
-            func=search.run,
+            func=search.results,
             description="useful for when you need to answer questions about current events. You should ask targeted questions"
         ),
         Tool(
