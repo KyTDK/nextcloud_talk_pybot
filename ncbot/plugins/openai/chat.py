@@ -42,11 +42,6 @@ async def chat3(conversation_token, username, input):
     search = SearchTool()
     tools = [
         Tool(
-            name="Wikipedia",
-            func=wikipedia.run,
-            description="useful when you need an answer about encyclopedic general knowledge"
-        ),
-        Tool(
             name='PubMed',
             func=pubmed.run, 
             description='Useful tool for querying medical publications'
