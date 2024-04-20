@@ -20,7 +20,7 @@ from ncbot.plugins.utils.custom_agent_maker import create_openai_tools_agent
 plugin_name = 'openai'
 model_gpt_3 = 'gpt-3.5-turbo-0125'
 
-llm_gpt3 = ChatOpenAI(temperature=0.7, model_name=model_gpt_3)
+llm_gpt3 = ChatOpenAI(model_name=model_gpt_3)
 
 reset=False
 
@@ -71,7 +71,7 @@ async def chat3(conversation_token, username, input):
     # Get the prompt to use - you can modify this!
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "Your name is Nexty, you are capable of having both human-like conversations as well as being an assistant. You have access to real-time information as well as personal information of the user. When you don't know the answer to a question, you use the tools available to you to find an answer."),
+            ("system", "Your name is Nexty, you are capable of having both human-like conversations as well as being an assistant. You have access to real-time information as well as personal information of the user. You always return your sources and urls to the websites you have accessed. When you don't know the answer to a question, you use the tools available to you to find an answer."),
             MessagesPlaceholder("history", optional=True),
             ("human", "{input}"),
             MessagesPlaceholder("agent_scratchpad"),
