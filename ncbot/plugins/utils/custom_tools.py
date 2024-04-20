@@ -3,6 +3,7 @@ from langchain.pydantic_v1 import BaseModel, Field
 from langchain_core.tools import BaseTool
 from langchain_community.document_loaders.chromium import AsyncChromiumLoader
 from langchain_community.document_transformers.html2text import Html2TextTransformer
+from langchain_community.utilities.searx_search import SearxSearchWrapper
 
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
@@ -36,3 +37,30 @@ class ScrapeTool(BaseTool):
         html2text = Html2TextTransformer()
         docs_transformed = html2text.transform_documents(docs)
         return docs_transformed[0].page_content[0:500]
+    
+class SearchInput(BaseModel):
+    query: str = Field(description="What to lookup on the internet")
+    num_results: int = Field(description="Number of search results that are returned")
+
+
+class SearchTool(BaseTool):
+    name = "Search"
+    description = "Useful for when you need to answer questions about current events. You should ask targeted questions. Returns URLs and snippets of websites."
+    args_schema: Type[BaseModel] = SearchInput
+    return_direct: bool = False
+
+    def _run(
+        self, query: str, num_results: int, run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> str:
+        """Use the tool synchronously"""
+        raise NotImplementedError("Calculator does not support async")
+
+    async def _arun(
+        self,
+        query: str, 
+        num_results: int,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Use the tool asynchronously."""
+        search = SearxSearchWrapper(searx_host="http://localhost:8888")
+        return search.results(query, num_results=num_results)

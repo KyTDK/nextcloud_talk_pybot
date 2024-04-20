@@ -1,13 +1,12 @@
 import ncbot.command.base as base
 
 from ncbot.plugins.utils.history import get_instance
-from ncbot.plugins.utils.custom_tools import ScrapeTool
+from ncbot.plugins.utils.custom_tools import ScrapeTool, SearchTool
 
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
-from langchain_community.utilities import SearxSearchWrapper
 
 
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
@@ -36,11 +35,11 @@ async def chat3(conversation_token, username, input):
     history_util = get_instance()
     history = history_util.get_memory(
         conversation_token).load_memory_variables({})['history']
-    search = SearxSearchWrapper(searx_host="http://localhost:8888")
     wikipedia = WikipediaAPIWrapper()
     pubmed = PubMedAPIWrapper()
     python_repl = PythonREPL()
     scrape = ScrapeTool()
+    search = SearchTool()
     tools = [
       Tool(
             name="Search",
@@ -77,7 +76,8 @@ async def chat3(conversation_token, username, input):
             description="Clear AI's memory, forgets what everyone has said",
             func=lambda x: set_reset(True)
         ),
-        scrape
+        scrape,
+        search,
     ]
 
     # Get the prompt to use - you can modify this!
