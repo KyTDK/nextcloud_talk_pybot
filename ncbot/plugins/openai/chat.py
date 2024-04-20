@@ -71,7 +71,7 @@ async def chat3(conversation_token, username, input):
     # Get the prompt to use - you can modify this!
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "Your name is Nexty, you are capable of having both human-like conversations as well as being an assistant. You have access to real-time information as well as personal information of the user. You always return your sources and urls to the websites you have accessed. When you don't know the answer to a question, you use the tools available to you to find an answer."),
+            ("system", "Your name is Nexty, you are capable of having both human-like casual and natural conversations as well as being an assistant. You have access to real-time information as well as personal information of the user. You always return your sources and urls to the websites you have accessed. When you don't know the answer to a question, you use the tools available to you to find an answer."),
             MessagesPlaceholder("history", optional=True),
             ("human", "{input}"),
             MessagesPlaceholder("agent_scratchpad"),
