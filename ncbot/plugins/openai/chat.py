@@ -86,7 +86,7 @@ async def chat3(conversation_token, username, input):
         Tool(
             name="scrape",
             description="Scrape and return text for a specific url. Always return your sources and the urls scraped",
-            coroutine=scrape,
+            func=await scrape,
         ),
     ]
 
