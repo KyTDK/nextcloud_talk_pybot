@@ -40,7 +40,7 @@ class ScrapeTool(BaseTool):
     
 class SearchInput(BaseModel):
     query: str = Field(description="What to lookup on the internet")
-    num_results: int = Field(description="Number of search results that are returned")
+    num_results: int = Field(description="Number of search results that are returned. Minimum of 5 required.")
 
 
 class SearchTool(BaseTool):
@@ -62,5 +62,7 @@ class SearchTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Use the tool asynchronously."""
+        if num_results < 5:
+            num_results=5
         search = SearxSearchWrapper(searx_host="http://localhost:8888")
         return search.results(query, num_results=num_results)
