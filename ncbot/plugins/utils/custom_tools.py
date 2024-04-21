@@ -36,7 +36,7 @@ class ScrapeTool(BaseTool):
         docs = await loader.aload()
         html2text = Html2TextTransformer()
         docs_transformed = html2text.transform_documents(docs)
-        return docs_transformed[0].page_content[0:500]
+        return docs_transformed[0].page_content[0:1000]
     
 class SearchInput(BaseModel):
     query: str = Field(description="What to lookup on the internet")
