@@ -50,7 +50,7 @@ class ScrapeTool(BaseTool):
         )
         texts = text_splitter.split_text(document.page_content)
         vectorstore = FAISS.from_texts(texts, embedding=OpenAIEmbeddings())
-        
+
         retriever = vectorstore.as_retriever(
             search_kwargs={"k": 1}
         )  # Only extract from first document
