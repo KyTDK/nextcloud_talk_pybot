@@ -20,16 +20,12 @@ from langchain.callbacks.manager import (
 
 class ScrapeInput(BaseModel):
     url: str = Field(description="URL to scrape")
-    description: str = Field(description="Description of content to be extracted, for example, key ideas, dates, names, etc")
+    description: str = Field(description="Description of content specified to be extracted")
 
 def create_data_class(description):
-    class Data(BaseModel):
-        content: str = Field(..., description=description)
-        evidence: str = Field(..., description="Repeat verbatim the sentence(s) from which the year and description information were extracted")
-    
     class ExtractionData(BaseModel):
-        data: List[Data]
-    
+        data: List[str] = Field(..., description=description)
+        
     return ExtractionData
     
 class ScrapeTool(BaseTool):
