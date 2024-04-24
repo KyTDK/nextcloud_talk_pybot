@@ -8,7 +8,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 from langchain_core.runnables import RunnableLambda
 from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import CharacterTextSplitter
+from langchain_text_splitters import CharacterTextSplitter, TokenTextSplitter
 
 texts = text_splitter.split_text(document.page_content)
 vectorstore = FAISS.from_texts(texts, embedding=OpenAIEmbeddings())
@@ -48,6 +48,12 @@ class ScrapeTool(BaseTool):
         """Use the tool asynchronously."""
         loader = AsyncChromiumLoader([url])
         document = await loader.aload()[0]
+        text_splitter = TokenTextSplitter(
+            # Controls the size of each chunk
+            chunk_size=2000,
+            # Controls overlap between chunks
+            chunk_overlap=20,
+        )
         texts = text_splitter.split_text(document.page_content)
         vectorstore = FAISS.from_texts(texts, embedding=OpenAIEmbeddings())
         
