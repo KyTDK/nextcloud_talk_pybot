@@ -12,3 +12,4 @@ langchain_experimental
 xmltodict
 html2text
 playwright
+faiss-cpu
