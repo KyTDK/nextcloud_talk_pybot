@@ -24,7 +24,7 @@ class ScrapeInput(BaseModel):
 
 def create_data_class(description):
     class Data(BaseModel):
-        data: str = Field(..., description=description)
+        content: str = Field(..., description=description)
         evidence: str = Field(..., description="Repeat verbatim the sentence(s) from which the year and description information were extracted")
     
     class ExtractionData(BaseModel):
