@@ -2,7 +2,7 @@ from typing import Optional, Type, List
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain_core.tools import BaseTool
 from langchain_community.document_loaders.chromium import AsyncChromiumLoader
-from langchain_community.document_transformers.html2text import Html2TextTransformer
+from langchain_community.document_transformers import BeautifulSoupTransformer
 from langchain_community.utilities.searx_search import SearxSearchWrapper
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
@@ -52,9 +52,13 @@ class ScrapeTool(BaseTool):
     ) -> str:
         """Use the tool asynchronously."""
         loader = AsyncChromiumLoader([url])
-        documents = await loader.aload()
-        html2text = Html2TextTransformer()
-        docs_transformed = html2text.transform_documents(documents)
+        html = await loader.aload()
+        
+        # Transform
+        bs_transformer = BeautifulSoupTransformer()
+        document = bs_transformer.transform_documents(html)[0]
+        
+        document.page_content = re.sub("\n\n+", "\n", document.page_content)
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -90,7 +94,7 @@ class ScrapeTool(BaseTool):
             # Controls overlap between chunks
             chunk_overlap=20,
         )
-        texts = text_splitter.split_text(docs_transformed[0].page_content)
+        texts = text_splitter.split_text(document.page_content)
         # Limit just to the first 3 chunks
         # so the code can be re-run quickly
         first_few = texts[:3]
