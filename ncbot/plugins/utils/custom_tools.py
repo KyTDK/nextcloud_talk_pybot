@@ -85,16 +85,14 @@ class ScrapeTool(BaseTool):
             # Controls overlap between chunks
             chunk_overlap=20,
         )
-        texts = text_splitter.split_text(document.page_content)
-        vectorstore = FAISS.from_texts(texts, embedding=OpenAIEmbeddings())
-
-        retriever = vectorstore.as_retriever(
-            search_kwargs={"k": 1}
-        )  # Only extract from first document
-        rag_extractor = {
-            "text": retriever | (lambda docs: docs[0].page_content)  # fetch content of top doc
-        } | extractor
-        results = rag_extractor.invoke(description)
+        # Limit just to the first 3 chunks
+        # so the code can be re-run quickly
+        first_few = texts[:3]
+        
+        extractions = extractor.batch(
+            [{"text": text} for text in first_few],
+            {"max_concurrency": 5},  # limit the concurrency by passing max concurrency!
+        )
         return results
     
 class SearchInput(BaseModel):
