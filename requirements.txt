@@ -10,5 +10,5 @@ redis==4.5.5
 langchain-openai
 langchain_experimental
 xmltodict
-html2text
+beautifulsoup4
 playwright
