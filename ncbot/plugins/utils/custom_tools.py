@@ -90,7 +90,7 @@ class ScrapeTool(BaseTool):
             # Controls overlap between chunks
             chunk_overlap=20,
         )
-        texts = text_splitter.split_text(docs_transformed)
+        texts = text_splitter.split_text(docs_transformed[0].page_content)
         # Limit just to the first 3 chunks
         # so the code can be re-run quickly
         first_few = texts[:3]
