@@ -12,7 +12,6 @@ from langchain_text_splitters import CharacterTextSplitter, TokenTextSplitter
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
-
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
     CallbackManagerForToolRun,
@@ -54,7 +53,8 @@ class ScrapeTool(BaseTool):
         """Use the tool asynchronously."""
         loader = AsyncChromiumLoader([url])
         document = (await loader.aload())[0]
-
+        html2text = Html2TextTransformer()
+        docs_transformed = html2text.transform_documents(document)
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -90,7 +90,7 @@ class ScrapeTool(BaseTool):
             # Controls overlap between chunks
             chunk_overlap=20,
         )
-        texts = text_splitter.split_text(document.page_content)
+        texts = text_splitter.split_text(docs_transformed)
         # Limit just to the first 3 chunks
         # so the code can be re-run quickly
         first_few = texts[:3]
