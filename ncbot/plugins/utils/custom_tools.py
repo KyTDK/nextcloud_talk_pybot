@@ -22,19 +22,15 @@ class ScrapeInput(BaseModel):
     url: str = Field(description="URL to scrape")
     description: str = Field(description="Description of content to be extracted, for example, key ideas, dates, names, etc")
 
-
-class Data(BaseModel):
-    description: str
-    def __init__(self, description):
-        self.description = description
-    data: str = Field(..., description=description)
-    evidence: str = Field(..., description="Repeat verbatim the sentence(s) from which the year and description information were extracted")
-
-class ExtractionData(BaseModel):
-    description: str
-    def __init__(self, description):
-        self.description = description
-    data: List[Data(description)]
+def create_data_class(description):
+    class Data(BaseModel):
+        data: str = Field(..., description=description)
+        evidence: str = Field(..., description="Repeat verbatim the sentence(s) from which the year and description information were extracted")
+    
+    class ExtractionData(BaseModel):
+        data: List[Data]
+    
+    return ExtractionData
     
 class ScrapeTool(BaseTool):
     name = "Scrape"
@@ -82,7 +78,7 @@ class ScrapeTool(BaseTool):
         )
         
         extractor = prompt | llm.with_structured_output(
-            schema=ExtractionData(query),
+            schema=create_data_class(description),
             method="function_calling",
             include_raw=False,
         )
