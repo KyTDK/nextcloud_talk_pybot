@@ -94,6 +94,11 @@ class ScrapeTool(BaseTool):
             [{"text": text} for text in first_few],
             {"max_concurrency": 5},  # limit the concurrency by passing max concurrency!
         )
+
+        results = []
+
+        for extraction in extractions:
+            results.extend(extraction.data)
         return results
     
 class SearchInput(BaseModel):
