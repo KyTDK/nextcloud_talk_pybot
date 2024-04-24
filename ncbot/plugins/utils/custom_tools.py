@@ -24,15 +24,15 @@ class ScrapeInput(BaseModel):
 
 
 class Data(BaseModel):
-    def __init__(self, description: str):
+    def __init__(self, description):
         self.description = description
-    data: str = Field(..., description=self.description)
+    data: str = Field(..., description=description)
     evidence: str = Field(..., description="Repeat verbatim the sentence(s) from which the year and description information were extracted")
 
 class ExtractionData(BaseModel):
-    def __init__(self, description: str):
+    def __init__(self, description):
         self.description = description
-    data: List[Data(self.description)]
+    data: List[Data(description)]
     
 class ScrapeTool(BaseTool):
     name = "Scrape"
