@@ -52,9 +52,9 @@ class ScrapeTool(BaseTool):
     ) -> str:
         """Use the tool asynchronously."""
         loader = AsyncChromiumLoader([url])
-        document = (await loader.aload())[0]
+        documents = await loader.aload()
         html2text = Html2TextTransformer()
-        docs_transformed = html2text.transform_documents(document)
+        docs_transformed = html2text.transform_documents(documents)
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
