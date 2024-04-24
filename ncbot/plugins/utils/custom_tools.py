@@ -10,12 +10,6 @@ from langchain_core.runnables import RunnableLambda
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter, TokenTextSplitter
 
-texts = text_splitter.split_text(document.page_content)
-vectorstore = FAISS.from_texts(texts, embedding=OpenAIEmbeddings())
-
-retriever = vectorstore.as_retriever(
-    search_kwargs={"k": 1}
-)  # Only extract from first document
 
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
