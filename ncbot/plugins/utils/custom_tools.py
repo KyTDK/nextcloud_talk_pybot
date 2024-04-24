@@ -44,9 +44,10 @@ class Data(BaseModel):
 
 
 class ExtractionData(BaseModel):
-    """Extracted information about key developments in the history of cars."""
-
-    data: List[Data]
+    def __init__(self, description):
+        self.description=description
+        
+    data: List[Data(description)]
 
 class ScrapeTool(BaseTool):
     name = "Scrape"
@@ -94,7 +95,7 @@ class ScrapeTool(BaseTool):
         )
         
         extractor = prompt | llm.with_structured_output(
-            schema=ExtractionData,
+            schema=ExtractionData(query),
             method="function_calling",
             include_raw=False,
         )
