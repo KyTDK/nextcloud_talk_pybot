@@ -59,7 +59,7 @@ class ScrapeTool(BaseTool):
             [
                 (
                     "system",
-                    "You are an expert at identifying certain elements in text."
+                    "You are an expert identifying the requested information from text."
                     "Only extract information that fits the requested description. Extract nothing if no important information can be found in the text.",
                 ),
                 # MessagesPlaceholder('examples'), # Keep on reading through this use case to see how to use examples to improve performance
