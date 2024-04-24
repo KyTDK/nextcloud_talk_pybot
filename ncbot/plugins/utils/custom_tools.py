@@ -41,7 +41,7 @@ class ScrapeTool(BaseTool):
     ) -> str:
         """Use the tool asynchronously."""
         loader = AsyncChromiumLoader([url])
-        document = await loader.aload()[0]
+        document = (await loader.aload())[0]
         text_splitter = TokenTextSplitter(
             # Controls the size of each chunk
             chunk_size=2000,
