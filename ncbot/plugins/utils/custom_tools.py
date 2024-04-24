@@ -20,35 +20,18 @@ from langchain.callbacks.manager import (
 
 class ScrapeInput(BaseModel):
     url: str = Field(description="URL to scrape")
-    query: str = Field(description="Type of content to extract, for example, key ideas, dates, names, etc")
-
-from typing import List, Optional
-
-from langchain.chains import create_structured_output_runnable
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_openai import ChatOpenAI
+    query: str = Field(description="Description of content to be extracted, for example, key ideas, dates, names, etc")
 
 
 class Data(BaseModel):
-    def __init__(self, description):
-        self.description=description
-        
-    data: str = Field(
-        ..., description=description
-    )
-    evidence: str = Field(
-        ...,
-        description="Repeat in verbatim the sentence(s) from which the year and description information were extracted",
-    )
-
+    description: str
+    data: str = Field(..., description="Description of the data")
+    evidence: str = Field(..., description="Repeat verbatim the sentence(s) from which the year and description information were extracted")
 
 class ExtractionData(BaseModel):
-    def __init__(self, description):
-        self.description=description
-        
-    data: List[Data(description)]
-
+    description: str
+    data: List[Data]
+    
 class ScrapeTool(BaseTool):
     name = "Scrape"
     description = "Extract specific text from a website for a specific URL. Always return your sources and the urls scraped"
