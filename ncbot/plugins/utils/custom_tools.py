@@ -24,12 +24,14 @@ class ScrapeInput(BaseModel):
 
 
 class Data(BaseModel):
+    description: str
     def __init__(self, description):
         self.description = description
     data: str = Field(..., description=description)
     evidence: str = Field(..., description="Repeat verbatim the sentence(s) from which the year and description information were extracted")
 
 class ExtractionData(BaseModel):
+    description: str
     def __init__(self, description):
         self.description = description
     data: List[Data(description)]
