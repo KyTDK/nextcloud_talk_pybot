@@ -20,7 +20,7 @@ from langchain.callbacks.manager import (
 
 class ScrapeInput(BaseModel):
     url: str = Field(description="URL to scrape")
-    description: str = Field(description="Description of content specified to be extracted")
+    description: str = Field(description="Description of the type of information that should be extracted")
 
 def create_data_class(description):
     class ExtractionData(BaseModel):
