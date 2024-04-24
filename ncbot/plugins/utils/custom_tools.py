@@ -20,7 +20,7 @@ from langchain.callbacks.manager import (
 
 class ScrapeInput(BaseModel):
     url: str = Field(description="URL to scrape")
-    query: str = Field(description="Description of content to be extracted, for example, key ideas, dates, names, etc")
+    description: str = Field(description="Description of content to be extracted, for example, key ideas, dates, names, etc")
 
 
 class Data(BaseModel):
@@ -39,7 +39,7 @@ class ScrapeTool(BaseTool):
     return_direct: bool = False
 
     def _run(
-        self, url: str, run_manager: Optional[CallbackManagerForToolRun] = None
+        self, url: str, description: str, run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
         """Use the tool synchronously"""
         raise NotImplementedError("Calculator does not support async")
@@ -47,7 +47,7 @@ class ScrapeTool(BaseTool):
     async def _arun(
         self,
         url: str,
-        query: str,
+        description: str,
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Use the tool asynchronously."""
