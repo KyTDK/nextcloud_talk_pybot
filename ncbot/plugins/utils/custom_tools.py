@@ -42,6 +42,36 @@ class ScrapeTool(BaseTool):
         """Use the tool asynchronously."""
         loader = AsyncChromiumLoader([url])
         document = (await loader.aload())[0]
+
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    "You are an expert at identifying key historic development in text. "
+                    "Only extract important historic developments. Extract nothing if no important information can be found in the text.",
+                ),
+                # MessagesPlaceholder('examples'), # Keep on reading through this use case to see how to use examples to improve performance
+                ("human", "{text}"),
+            ]
+        )
+        
+        
+        # We will be using tool calling mode, which
+        # requires a tool calling capable model.
+        llm = ChatOpenAI(
+            # Consider benchmarking with a good model to get
+            # a sense of the best possible quality.
+            model="gpt-3.5-turbo-0125",
+            # Remember to set the temperature to 0 for extractions!
+            temperature=0,
+        )
+        
+        extractor = prompt | llm.with_structured_output(
+            schema=ExtractionData,
+            method="function_calling",
+            include_raw=False,
+        )
+        
         text_splitter = TokenTextSplitter(
             # Controls the size of each chunk
             chunk_size=2000,
