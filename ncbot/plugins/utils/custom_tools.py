@@ -60,8 +60,8 @@ class ScrapeTool(BaseTool):
             [
                 (
                     "system",
-                    "You are an expert at identifying key historic development in text. "
-                    "Only extract important historic developments. Extract nothing if no important information can be found in the text.",
+                    "You are an expert at identifying certain elements in text."
+                    "Only extract information that fits the requested description. Extract nothing if no important information can be found in the text.",
                 ),
                 # MessagesPlaceholder('examples'), # Keep on reading through this use case to see how to use examples to improve performance
                 ("human", "{text}"),
