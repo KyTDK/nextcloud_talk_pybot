@@ -56,9 +56,8 @@ class ScrapeTool(BaseTool):
         
         # Transform
         bs_transformer = BeautifulSoupTransformer()
-        document = bs_transformer.transform_documents(html)[0]
+        document = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)[0]
         
-        document.page_content = re.sub("\n\n+", "\n", document.page_content)
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
