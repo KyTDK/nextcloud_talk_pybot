@@ -98,7 +98,7 @@ class ScrapeTool(BaseTool):
         rag_extractor = {
             "text": retriever | (lambda docs: docs[0].page_content)  # fetch content of top doc
         } | extractor
-        results = rag_extractor.invoke(query)
+        results = rag_extractor.invoke(description)
         return results
     
 class SearchInput(BaseModel):
