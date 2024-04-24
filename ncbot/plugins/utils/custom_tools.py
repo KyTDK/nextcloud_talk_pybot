@@ -96,7 +96,7 @@ class ScrapeTool(BaseTool):
         texts = text_splitter.split_text(document.page_content)
         # Limit just to the first 3 chunks
         # so the code can be re-run quickly
-        first_few = texts[:3]
+        first_few = texts[:20]
         
         extractions = extractor.batch(
             [{"text": text} for text in first_few],
