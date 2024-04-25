@@ -10,8 +10,8 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter, TokenTextSplitter
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
-from langchain_community.document_loaders import OnlinePDFLoader
 from langchain_community.document_loaders import Docx2txtLoader
+from langchain_community.document_loaders import PyPDFLoader
 
 import urllib.request
 from typing_extensions import Annotated
@@ -87,8 +87,9 @@ class ScrapeTool(BaseTool):
             bs_transformer = BeautifulSoupTransformer()
             document = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)[0]
         elif(content_subtype=="pdf"):
-            loader = OnlinePDFLoader(url)
-            data = await loader.load()
+            downloaded_file = download_file(url)
+            loader = PyPDFLoader(downloaded_file)
+            data = await loader.aload()
             document = data[0]
         elif(content_subtype=="vnd.openxmlformats-officedocument.wordprocessingml.document"):
             downloaded_file = download_file(url)
