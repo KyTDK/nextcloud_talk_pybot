@@ -10,7 +10,10 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter, TokenTextSplitter
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
+from langchain_community.document_loaders import OnlinePDFLoader
+from langchain_community.document_loaders import Docx2txtLoader
 
+import urllib.request
 from typing_extensions import Annotated
 from typing import Optional, Type, List, Any
 
@@ -51,12 +54,24 @@ class ScrapeTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Use the tool asynchronously."""
-        loader = AsyncChromiumLoader([url])
-        html = await loader.aload()
-        
-        # Transform
-        bs_transformer = BeautifulSoupTransformer()
-        document = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)[0]
+        #Get document type
+        content_subtype="None"
+        with urllib.request.urlopen(url) as response:
+            content_subtype = response.info().get_content_subtype()
+        document=None
+        if(content_subtype="html"):
+            loader = AsyncChromiumLoader([url])
+            html = await loader.aload()
+            bs_transformer = BeautifulSoupTransformer()
+            document = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)[0]
+        elif(content_subtype="html"):
+            loader = OnlinePDFLoader(url)
+            data = await loader.load()
+            document = data[0]
+        elif(content_subtype="html")
+        else:
+            return "Document not supported"
+    
         
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -135,5 +150,7 @@ class SearchTool(BaseTool):
         """Use the tool asynchronously."""
         if num_results < 5:
             num_results=5
+        if num_resukts > 20:
+            num_results=20
         search = SearxSearchWrapper(searx_host="http://localhost:8888")
         return search.results(query, num_results=num_results)
