@@ -34,6 +34,28 @@ def create_data_class(description):
         data: List[Data]
         
     return ExtractionData
+
+def download_file(url):
+    # Create a temporary file
+    temp_file = tempfile.NamedTemporaryFile(delete=False)
+    temp_file_path = temp_file.name
+    
+    try:
+        # Download the file from the URL
+        with urllib.request.urlopen(url) as response:
+            temp_file.write(response.read())
+        
+        # Close the file after writing
+        temp_file.close()
+        
+        # Return the path of the downloaded file
+        return temp_file_path
+    
+    except Exception as e:
+        # If any error occurs, delete the temporary file
+        temp_file.close()
+        os.unlink(temp_file_path)
+        raise e
     
 class ScrapeTool(BaseTool):
     name = "Scrape"
@@ -64,15 +86,18 @@ class ScrapeTool(BaseTool):
             html = await loader.aload()
             bs_transformer = BeautifulSoupTransformer()
             document = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)[0]
-        elif(content_subtype="html"):
+        elif(content_subtype="pdf"):
             loader = OnlinePDFLoader(url)
             data = await loader.load()
             document = data[0]
-        elif(content_subtype="html")
+        elif(content_subtype="vnd.openxmlformats-officedocument.wordprocessingml.document"):
+            downloaded_file = download_file(url)
+            loader = Docx2txtLoader(downloaded_file)
+            data = await loader.aload()
+            document = data[0]
         else:
             return "Document not supported"
     
-        
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
