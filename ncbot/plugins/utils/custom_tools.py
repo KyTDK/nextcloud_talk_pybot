@@ -12,7 +12,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
 from typing_extensions import Annotated
-from typing import Optional, Type, List
+from typing import Optional, Type, List, Any
 
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
@@ -25,7 +25,7 @@ class ScrapeInput(BaseModel):
 
 def create_data_class(description):
     class Data(BaseModel):
-        data: Optional[str] = Field(None, description=description)
+        data: Optional[Any] = Field(None, description=description)
     
     class ExtractionData(BaseModel):
         data: List[Data]
