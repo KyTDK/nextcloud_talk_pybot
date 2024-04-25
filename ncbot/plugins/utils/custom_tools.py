@@ -81,16 +81,16 @@ class ScrapeTool(BaseTool):
         with urllib.request.urlopen(url) as response:
             content_subtype = response.info().get_content_subtype()
         document=None
-        if(content_subtype="html"):
+        if(content_subtype=="html"):
             loader = AsyncChromiumLoader([url])
             html = await loader.aload()
             bs_transformer = BeautifulSoupTransformer()
             document = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)[0]
-        elif(content_subtype="pdf"):
+        elif(content_subtype=="pdf"):
             loader = OnlinePDFLoader(url)
             data = await loader.load()
             document = data[0]
-        elif(content_subtype="vnd.openxmlformats-officedocument.wordprocessingml.document"):
+        elif(content_subtype=="vnd.openxmlformats-officedocument.wordprocessingml.document"):
             downloaded_file = download_file(url)
             loader = Docx2txtLoader(downloaded_file)
             data = await loader.aload()
