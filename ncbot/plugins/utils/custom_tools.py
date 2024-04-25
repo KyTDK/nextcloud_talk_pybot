@@ -136,9 +136,7 @@ class ScrapeTool(BaseTool):
             # Controls overlap between chunks
             chunk_overlap=20,
         )
-        
-        texts=[]
-        
+                
         page_content=""
         for document in documents:
             page_content = page_content+document.page_content
