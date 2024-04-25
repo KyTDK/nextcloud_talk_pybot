@@ -25,7 +25,7 @@ class ScrapeInput(BaseModel):
 
 def create_data_class(description):
     class Data(BaseModel):
-        data: str = Optional[Annotated[int, Field(description=description]]
+        data: str = Optional[Annotated[int, Field(description=description)]]
     
     class ExtractionData(BaseModel):
         data: List[Data]
