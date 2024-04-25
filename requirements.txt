@@ -14,4 +14,4 @@ beautifulsoup4
 playwright
 unstructured
 pdf2image
-pdfminer
+pdfminer.six
