@@ -12,6 +12,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders import Docx2txtLoader
 from langchain_community.document_loaders import PyPDFLoader
+from langchain.docstore.document import Document
 
 import urllib.request
 from typing_extensions import Annotated
@@ -137,8 +138,11 @@ class ScrapeTool(BaseTool):
         )
         
         texts=[]
+        
+        page_content=""
         for document in documents:
-            texts.append(text_splitter.split_text(document.page_content))
+            page_content = page_content+document.page_content
+        texts.append(text_splitter.split_text(page_content))
         
         # Limit just to the first 3 chunks
         # so the code can be re-run quickly
