@@ -17,3 +17,5 @@ pdf2image
 pdfminer.six
 pillow_heif
 opencv-python
+unstructured_inference
+pytesseract
