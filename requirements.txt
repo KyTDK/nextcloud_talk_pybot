@@ -15,3 +15,4 @@ playwright
 unstructured
 pdf2image
 pdfminer.six
+pillow_heif
