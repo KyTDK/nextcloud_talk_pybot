@@ -1,4 +1,3 @@
-from typing import Optional, Type, List
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain_core.tools import BaseTool
 from langchain_community.document_loaders.chromium import AsyncChromiumLoader
@@ -12,6 +11,9 @@ from langchain_text_splitters import CharacterTextSplitter, TokenTextSplitter
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
+from typing_extensions import Annotated
+from typing import Optional, Type, List
+
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
     CallbackManagerForToolRun,
@@ -23,7 +25,7 @@ class ScrapeInput(BaseModel):
 
 def create_data_class(description):
     class Data(BaseModel):
-        data: str = Field(description=description, default="None")
+        data: str = Optional[Annotated[int, Field(description=description]]
     
     class ExtractionData(BaseModel):
         data: List[Data]
