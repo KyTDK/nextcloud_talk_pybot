@@ -16,6 +16,7 @@ from langchain_community.document_loaders import PyPDFLoader
 import urllib.request
 from typing_extensions import Annotated
 from typing import Optional, Type, List, Any
+import tempfile
 
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
