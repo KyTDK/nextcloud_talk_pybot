@@ -38,7 +38,7 @@ def create_data_class(description):
 
 def download_file(url):
     # Create a temporary file
-    temp_file = tempfile.NamedTemporaryFile()
+    temp_file = tempfile.NamedTemporaryFile(delete=False)
     temp_file_path = temp_file.name
     
     try:
