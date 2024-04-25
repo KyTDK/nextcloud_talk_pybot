@@ -81,22 +81,22 @@ class ScrapeTool(BaseTool):
         content_subtype="None"
         with urllib.request.urlopen(url) as response:
             content_subtype = response.info().get_content_subtype()
-        document=None
+        documents=None
         if(content_subtype=="html"):
             loader = AsyncChromiumLoader([url])
             html = await loader.aload()
             bs_transformer = BeautifulSoupTransformer()
-            document = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)[0]
+            documents = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)
         elif(content_subtype=="pdf"):
             downloaded_file = download_file(url)
             loader = PyPDFLoader(downloaded_file)
             data = await loader.aload()
-            document = data[0]
+            documents = data
         elif(content_subtype=="vnd.openxmlformats-officedocument.wordprocessingml.document"):
             downloaded_file = download_file(url)
             loader = Docx2txtLoader(downloaded_file)
             data = await loader.aload()
-            document = data[0]
+            documents = data
         else:
             return "Document not supported"
     
@@ -135,7 +135,11 @@ class ScrapeTool(BaseTool):
             # Controls overlap between chunks
             chunk_overlap=20,
         )
-        texts = text_splitter.split_text(document.page_content)
+        
+        texts=[]
+        for document in documents:
+            texts.append(text_splitter.split_text(document.page_content))
+        
         # Limit just to the first 3 chunks
         # so the code can be re-run quickly
         first_few = texts[:100]
