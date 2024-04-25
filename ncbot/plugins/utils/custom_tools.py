@@ -185,7 +185,7 @@ class SearchTool(BaseTool):
         """Use the tool asynchronously."""
         if num_results < 5:
             num_results=5
-        if num_resukts > 20:
+        if num_results > 20:
             num_results=20
         search = SearxSearchWrapper(searx_host="http://localhost:8888")
         return search.results(query, num_results=num_results)
