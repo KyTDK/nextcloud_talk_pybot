@@ -140,7 +140,7 @@ class ScrapeTool(BaseTool):
         page_content=""
         for document in documents:
             page_content = page_content+document.page_content
-        texts.append(text_splitter.split_text(page_content))
+        texts = text_splitter.split_text(page_content)
         
         # Limit just to the first 3 chunks
         # so the code can be re-run quickly
