@@ -24,7 +24,7 @@ class ScrapeInput(BaseModel):
 def create_data_class(description):
     class Data(BaseModel):
         data: str = Field(
-            ..., description=description
+            None, description=description
         )
     
     class ExtractionData(BaseModel):
