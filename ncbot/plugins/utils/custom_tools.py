@@ -13,6 +13,7 @@ import urllib.request
 from typing import Optional, Type, List, Any
 import tempfile
 import re
+import os
 
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
