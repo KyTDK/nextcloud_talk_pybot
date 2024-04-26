@@ -3,19 +3,13 @@ from langchain_core.tools import BaseTool
 from langchain_community.document_loaders.chromium import AsyncChromiumLoader
 from langchain_community.document_transformers import BeautifulSoupTransformer
 from langchain_community.utilities.searx_search import SearxSearchWrapper
-from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
-from langchain_core.runnables import RunnableLambda
-from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import CharacterTextSplitter, TokenTextSplitter
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_text_splitters import TokenTextSplitter
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders import Docx2txtLoader
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.docstore.document import Document
 
 import urllib.request
-from typing_extensions import Annotated
 from typing import Optional, Type, List, Any
 import tempfile
 import re
