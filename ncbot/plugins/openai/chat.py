@@ -1,7 +1,7 @@
 import ncbot.command.base as base
 
 from ncbot.plugins.utils.history import get_instance
-from ncbot.plugins.utils.custom_tools import ScrapeTool, SearchTool
+from ncbot.plugins.utils.custom_tools import ScrapeTool, SearchTool, FileGetByLocationTool, FileListTool
 
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent, Tool
@@ -14,6 +14,8 @@ from langchain_experimental.utilities import PythonREPL
 
 
 from datetime import datetime
+import nc_py_api
+import ncbot.config as ncconfig
 
 from ncbot.plugins.utils.custom_agent_maker import create_openai_tools_agent
 
@@ -23,6 +25,8 @@ model_gpt_3 = 'gpt-3.5-turbo-0125'
 llm_gpt3 = ChatOpenAI(model_name=model_gpt_3)
 
 reset=False
+
+nc = nc_py_api.Nextcloud(nextcloud_url="http://cloud.neomechanical.com", nc_auth_user=ncconfig.cf.username, nc_auth_pass=ncconfig.cf.username)
 
 def set_reset(value):
   global reset  # Use `global` to access a variable from the enclosing scope
@@ -38,6 +42,8 @@ async def chat3(conversation_token, username, input):
     python_repl = PythonREPL()
     scrape = ScrapeTool()
     search = SearchTool()
+    get_files_by_location = FileGetByLocationTool(username, nc)
+    list_files = FileListTool(username, nc)
     tools = [
         Tool(
             name='PubMed',
@@ -66,6 +72,8 @@ async def chat3(conversation_token, username, input):
         ),
         scrape,
         search,
+        get_files_by_location,
+        list_files
     ]
 
     # Get the prompt to use - you can modify this!

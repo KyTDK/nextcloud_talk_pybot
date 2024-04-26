@@ -14,11 +14,16 @@ from typing import Optional, Type, List, Any
 import tempfile
 import re
 import os
+import nc_py_api
+import pathlib
+import markdown
 
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
     CallbackManagerForToolRun,
 )
+
+#Scrape tool
 
 class ScrapeInput(BaseModel):
     url: str = Field(description="URL to scrape")
@@ -54,7 +59,114 @@ def download_file(url):
         temp_file.close()
         os.unlink(temp_file_path)
         raise e
+
+def save_file(bytes):
+    # Create a temporary file
+    temp_file = tempfile.NamedTemporaryFile(delete=False)
+    temp_file_path = temp_file.name
     
+    try:
+        # Download the file from the URL
+        temp_file.write(bytes)
+        
+        # Close the file after writing
+        temp_file.close()
+        
+        # Return the path of the downloaded file
+        return temp_file_path
+    
+    except Exception as e:
+        # If any error occurs, delete the temporary file
+        temp_file.close()
+        os.unlink(temp_file_path)
+        raise e
+
+def ai_read_data(description, content):
+    prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "system",
+                        "You are an expert identifying the requested information from text."
+                        "Only extract information that fits the requested description. Extract nothing if no important information can be found in the text.",
+                    ),
+                    # MessagesPlaceholder('examples'), # Keep on reading through this use case to see how to use examples to improve performance
+                    ("human", "{text}"),
+                ]
+            )
+            
+    
+    # We will be using tool calling mode, which
+    # requires a tool calling capable model.
+    llm = ChatOpenAI(
+        # Consider benchmarking with a good model to get
+        # a sense of the best possible quality.
+        model="gpt-3.5-turbo-0125",
+        # Remember to set the temperature to 0 for extractions!
+        temperature=0,
+    )
+    
+    extractor = prompt | llm.with_structured_output(
+        schema=create_data_class(description),
+        method="function_calling",
+        include_raw=False,
+    )
+    
+    text_splitter = TokenTextSplitter(
+        # Controls the size of each chunk
+        chunk_size=2000,
+        # Controls overlap between chunks
+        chunk_overlap=20,
+    )
+            
+    texts = text_splitter.split_text(content)
+    
+    # Limit just to the first 3 chunks
+    # so the code can be re-run quickly
+    first_few = texts[:20]
+    
+    extractions = extractor.batch(
+        [{"text": text} for text in first_few],
+        {"max_concurrency": 5},  # limit the concurrency by passing max concurrency!
+    )
+
+    results = []
+
+    for extraction in extractions:
+        results.extend(extraction.data)
+    return results
+
+async def documents_to_content(documents):
+    page_content=""
+    for document in documents:
+        page_content = page_content+document.page_content
+    page_content = re.sub("\n\n+", "\n", page_content)
+    return page_content
+
+async def get_file_content(location, file_type):
+    if(file_type=="pdf"):
+        loader = PyPDFLoader(location)
+        data = await loader.aload()
+        data = documents_to_content(data)
+    elif(file_type=="vnd.openxmlformats-officedocument.wordprocessingml.document" or file_type==".docx" or file_type==".odt"):
+        loader = Docx2txtLoader(location)
+        data = await loader.aload()
+        data = documents_to_content(data)
+    elif(file_type==".txt"):
+        # Open the file in read mode
+        with open(location, 'r') as file:
+            # Read the entire content of the file
+            data = file.read()
+    elif(file_type==".md"):
+        with open(location, 'r') as f:
+            markdown_string = f.read()
+            html_string = markdown.markdown(markdown_string)
+            bs_transformer = BeautifulSoupTransformer()
+            data = bs_transformer.transform_documents(html_string, remove_lines=True, remove_comments=True)
+            data = documents_to_content(data)
+    else:
+        return "Document not supported"
+    return data
+
 class ScrapeTool(BaseTool):
     name = "Scrape"
     description = "Extract specific text from a website for a specific URL. Always return your sources and the urls scraped"
@@ -65,7 +177,7 @@ class ScrapeTool(BaseTool):
         self, url: str, description: str, run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
         """Use the tool synchronously"""
-        raise NotImplementedError("Calculator does not support async")
+        raise NotImplementedError("Scrape does not support sync")
 
     async def _arun(
         self,
@@ -75,85 +187,24 @@ class ScrapeTool(BaseTool):
     ) -> str:
         """Use the tool asynchronously."""
         #Get document type
-        content_subtype="None"
         with urllib.request.urlopen(url) as response:
             content_subtype = response.info().get_content_subtype()
-        documents=None
         if(content_subtype=="html"):
             loader = AsyncChromiumLoader([url])
             html = await loader.aload()
             bs_transformer = BeautifulSoupTransformer()
             documents = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)
-        elif(content_subtype=="pdf"):
-            downloaded_file = download_file(url)
-            loader = PyPDFLoader(downloaded_file)
-            data = await loader.aload()
-            documents = data
-        elif(content_subtype=="vnd.openxmlformats-officedocument.wordprocessingml.document"):
-            downloaded_file = download_file(url)
-            loader = Docx2txtLoader(downloaded_file)
-            data = await loader.aload()
-            documents = data
+            page_content = documents_to_content(documents)
         else:
-            return "Document not supported"
-    
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                (
-                    "system",
-                    "You are an expert identifying the requested information from text."
-                    "Only extract information that fits the requested description. Extract nothing if no important information can be found in the text.",
-                ),
-                # MessagesPlaceholder('examples'), # Keep on reading through this use case to see how to use examples to improve performance
-                ("human", "{text}"),
-            ]
-        )
-        
-        
-        # We will be using tool calling mode, which
-        # requires a tool calling capable model.
-        llm = ChatOpenAI(
-            # Consider benchmarking with a good model to get
-            # a sense of the best possible quality.
-            model="gpt-3.5-turbo-0125",
-            # Remember to set the temperature to 0 for extractions!
-            temperature=0,
-        )
-        
-        extractor = prompt | llm.with_structured_output(
-            schema=create_data_class(description),
-            method="function_calling",
-            include_raw=False,
-        )
-        
-        text_splitter = TokenTextSplitter(
-            # Controls the size of each chunk
-            chunk_size=2000,
-            # Controls overlap between chunks
-            chunk_overlap=20,
-        )
-                
-        page_content=""
-        for document in documents:
-            page_content = page_content+document.page_content
-        page_content = re.sub("\n\n+", "\n", page_content)
-        texts = text_splitter.split_text(page_content)
-        
-        # Limit just to the first 3 chunks
-        # so the code can be re-run quickly
-        first_few = texts[:20]
-        
-        extractions = extractor.batch(
-            [{"text": text} for text in first_few],
-            {"max_concurrency": 5},  # limit the concurrency by passing max concurrency!
-        )
+            downloaded_file = download_file(url)
+            page_content = get_file_content(content_subtype, downloaded_file)
 
-        results = []
-
-        for extraction in extractions:
-            results.extend(extraction.data)
+        results = ai_read_data(description, page_content)
+        
         return results
     
+#Search tool
+
 class SearchInput(BaseModel):
     query: str = Field(description="What to lookup on the internet")
     num_results: int = Field(description="Number of search results that are returned. Minimum of 5 required.")
@@ -161,7 +212,7 @@ class SearchInput(BaseModel):
 
 class SearchTool(BaseTool):
     name = "Search"
-    description = "Browse the internet to return URLs and snippets of websites, use scrape for further information. Useful for when you need to answer questions about current events. You should ask targeted questions. Always return your sources and urls of websites."
+    description = "Browse the internet to return URLs and snippets of websites, extract text for further information as snippets are brief. Useful for when you need to answer questions about current events. You should ask targeted questions. Always return your sources and urls of websites."
     args_schema: Type[BaseModel] = SearchInput
     return_direct: bool = False
 
@@ -169,7 +220,7 @@ class SearchTool(BaseTool):
         self, query: str, num_results: int, run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
         """Use the tool synchronously"""
-        raise NotImplementedError("Calculator does not support async")
+        raise NotImplementedError("Search does not support sync")
 
     async def _arun(
         self,
@@ -184,3 +235,71 @@ class SearchTool(BaseTool):
             num_results=20
         search = SearxSearchWrapper(searx_host="http://localhost:8888")
         return search.results(query, num_results=num_results)
+
+#File get tool
+
+class FileGetByLocationInput(BaseModel):
+    file_location: str = Field(description="File location to open")
+    description: str = Field(description="Detailed and concise description of the type of information that should be extracted from the file")
+
+class FileGetByLocationTool(BaseTool):
+    def __init__(self, username, nc: nc_py_api.Nextcloud):
+        self.username = username
+        self.nc = nc
+    name = "file_read_by_location"
+    description = "Get and read a file by its location, get locations with file_list"
+    args_schema: Type[BaseModel] = FileGetByLocationInput
+    return_direct: bool = False
+
+    def _run(
+        self, file_location: str, description: str, run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> str:
+        """Use the tool synchronously"""
+        raise NotImplementedError("Files does not support sync")
+
+    async def _arun(
+        self,
+        file_location: str,
+        description: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Use the tool asynchronously."""
+        # create Nextcloud client instance class
+        shares = self.nc.files.sharing.get_list(shared_with_me=True)
+        for share in shares:
+            if share.file_owner == self.username:
+                data = self.nc.files.download(share.path)
+                file = self.nc.files.by_path(share.path)
+                if file.name==file_location:
+                    file_type = ''.join(pathlib.Path(file.name).suffixes)
+                    saved_file_location = save_file(data)
+                    content = get_file_content(saved_file_location, file_type)
+                    return ai_read_data(description, content)
+
+#File list tool
+
+class FileListTool(BaseTool):
+    def __init__(self, username, nc: nc_py_api.Nextcloud):
+        self.username = username
+        self.nc = nc
+    name = "file_list"
+    description = "Get list of files shared by the user"
+    return_direct: bool = False
+
+    def _run(
+        self, run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> str:
+        """Use the tool synchronously"""
+        raise NotImplementedError("Files does not support sync")
+
+    async def _arun(
+        self,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Use the tool asynchronously."""
+        all_shares = self.nc.files.sharing.get_list(shared_with_me=True)
+        user_shared_files = []
+        for share in all_shares:
+            if share.file_owner==self.username:
+                user_shared_files.append(share.path)
+        return user_shared_files
