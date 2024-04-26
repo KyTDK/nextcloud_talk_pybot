@@ -1,13 +1,13 @@
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain_core.tools import BaseTool
 from langchain_community.document_loaders.chromium import AsyncChromiumLoader
-from langchain_community.document_transformers import BeautifulSoupTransformer
+from langchain_community.document_transformers.beautiful_soup_transformer import BeautifulSoupTransformer
 from langchain_community.utilities.searx_search import SearxSearchWrapper
 from langchain_text_splitters import TokenTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from langchain_community.document_loaders import Docx2txtLoader
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders.word_document import Docx2txtLoader
+from langchain_community.document_loaders.pdf import PyPDFLoader
 
 import urllib.request
 from typing import Optional, Type, List, Any
