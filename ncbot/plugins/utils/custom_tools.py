@@ -284,7 +284,7 @@ class FileGetByLocationTool(BaseTool):
                     saved_file_location = save_file(data)
                     content = await get_file_content(saved_file_location, file_type)
                     return ai_read_data(description, content)
-        return "That file doesn't exist, available files are :"+get_shared_files(username, nc)
+        return "That file doesn't exist, available files are :" + str(get_shared_files(self.username, self.nc))
         
 #File list tool
 
@@ -310,4 +310,4 @@ class FileListTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Use the tool asynchronously."""
-        return get_shared_files(username, nc)
+        return get_shared_files(self.username, self.nc)
