@@ -10,7 +10,7 @@ from langchain_community.document_loaders.word_document import Docx2txtLoader
 from langchain_community.document_loaders.pdf import PyPDFLoader
 
 import urllib.request
-from typing import Optional, Type, List, Any
+from typing import Dict, Optional, Tuple, Type, List, Any, Union
 import tempfile
 import re
 import os
@@ -249,7 +249,7 @@ class FileGetByLocationTool(BaseTool):
     description = "Get and read a file by its location, get locations with file_list"
     args_schema: Type[BaseModel] = FileGetByLocationInput
     return_direct: bool = False
-
+    
     def _run(
         self, file_location: str, description: str, run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
@@ -280,11 +280,14 @@ class FileGetByLocationTool(BaseTool):
 class FileListTool(BaseTool):
     nc: nc_py_api.Nextcloud = None
     username: str = None
-    
+
     name = "file_list"
     description = "Get list of files shared by the user"
     return_direct: bool = False
-
+    
+    def _to_args_and_kwargs(self, tool_input: Union[str, Dict]) -> Tuple[Tuple, Dict]:
+        return (), {}
+    
     def _run(
         self, run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
