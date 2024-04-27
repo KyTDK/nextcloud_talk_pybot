@@ -274,16 +274,16 @@ class FileGetByLocationTool(BaseTool):
     ) -> str:
         """Use the tool asynchronously."""
         # create Nextcloud client instance class
-        shares = self.nc.files.sharing.get_list(shared_with_me=True)
+        shares = get_shared_files(self.username, self.nc)
         for share in shares:
-            if share.file_owner == self.username and share.path==file_location:
+            if share.path==file_location:
                 file = self.nc.files.by_path(share.path)
                 data = self.nc.files.download(share.path)
                 file_type = ''.join(pathlib.Path(file.name).suffixes)
                 saved_file_location = save_file(data)
                 content = await get_file_content(saved_file_location, file_type)
                 return ai_read_data(description, content)
-        return "That file doesn't exist, available files are :" + str(get_shared_files(self.username, self.nc))
+        return "That file doesn't exist, available files are :" + str(shares)
         
 #File list tool
 
