@@ -34,7 +34,7 @@ def set_reset(value):
 
 
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
-async def chat3(conversation_token, fullname, username, input):
+async def chat3(conversation_token, username, user_id, input):
     history_util = get_instance()
     history = history_util.get_memory(
         conversation_token).load_memory_variables({})['history']
@@ -44,11 +44,11 @@ async def chat3(conversation_token, fullname, username, input):
     search = SearchTool()
 
     get_files_by_location = FileGetByLocationTool()
-    get_files_by_location.username = username
+    get_files_by_location.username = user_id
     get_files_by_location.nc = nc
 
     list_files = FileListTool()
-    list_files.username = username
+    list_files.username = user_id
     list_files.nc = nc
 
     tools = [
@@ -64,7 +64,7 @@ async def chat3(conversation_token, fullname, username, input):
         ),
         Tool(
             name="human_name",
-            func=lambda x: fullname,
+            func=lambda x: username,
             description="Retrieve the name of the human, useful for greeting them and referring to them"
         ),
         Tool(
