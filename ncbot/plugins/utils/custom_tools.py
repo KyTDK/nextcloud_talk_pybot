@@ -147,15 +147,15 @@ async def get_file_content(location, file_type):
     if(file_type=="pdf" or file_type==".pdf"):
         loader = PyPDFLoader(location)
         data = await loader.aload()
-        data = documents_to_content(data)
+        data = await documents_to_content(data)
     elif(file_type=="vnd.openxmlformats-officedocument.wordprocessingml.document" or file_type==".docx"):
         loader = Docx2txtLoader(location)
         data = await loader.aload()
-        data = documents_to_content(data)
+        data = await documents_to_content(data)
     elif(file_type==".odt"):
         loader = UnstructuredODTLoader(location, mode="elements")
         data = await loader.aload()
-        data = documents_to_content(data)
+        data = await documents_to_content(data)
     elif(file_type==".txt"):
         # Open the file in read mode
         with open(location, 'r') as file:
@@ -164,7 +164,7 @@ async def get_file_content(location, file_type):
     elif(file_type==".md"):
         loader = UnstructuredMarkdownLoader(location)
         data = await loader.aload()
-        data = documents_to_content(data)
+        data = await documents_to_content(data)
     else:
         return "Document not supported"
     return data
@@ -196,7 +196,7 @@ class ScrapeTool(BaseTool):
             html = await loader.aload()
             bs_transformer = BeautifulSoupTransformer()
             documents = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)
-            page_content = documents_to_content(documents)
+            page_content = await documents_to_content(documents)
         else:
             downloaded_file = download_file(url)
             page_content = await get_file_content(content_subtype, downloaded_file)
