@@ -243,9 +243,8 @@ class FileGetByLocationInput(BaseModel):
     description: str = Field(description="Detailed and concise description of the type of information that should be extracted from the file")
 
 class FileGetByLocationTool(BaseTool):
-    def __init__(self, username, nc: nc_py_api.Nextcloud):
-        self.username = username
-        self.nc = nc
+    nc: nc_py_api.Nextcloud = None
+    username: str = None
     name = "file_read_by_location"
     description = "Get and read a file by its location, get locations with file_list"
     args_schema: Type[BaseModel] = FileGetByLocationInput
@@ -279,9 +278,9 @@ class FileGetByLocationTool(BaseTool):
 #File list tool
 
 class FileListTool(BaseTool):
-    def __init__(self, username, nc: nc_py_api.Nextcloud):
-        self.username = username
-        self.nc = nc
+    nc: nc_py_api.Nextcloud = None
+    username: str = None
+    
     name = "file_list"
     description = "Get list of files shared by the user"
     return_direct: bool = False

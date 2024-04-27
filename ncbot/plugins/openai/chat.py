@@ -42,8 +42,15 @@ async def chat3(conversation_token, username, input):
     python_repl = PythonREPL()
     scrape = ScrapeTool()
     search = SearchTool()
-    get_files_by_location = FileGetByLocationTool(username=username, nc=nc)
-    list_files = FileListTool(username=username, nc=nc)
+
+    get_files_by_location = FileGetByLocationTool()
+    get_files_by_location.username = username
+    get_files_by_location.nc = nc
+
+    list_files = FileListTool()
+    list_files.username = username
+    list_files.nc = nc
+    
     tools = [
         Tool(
             name='PubMed',
