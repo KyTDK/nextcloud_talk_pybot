@@ -197,7 +197,7 @@ class ScrapeTool(BaseTool):
             page_content = documents_to_content(documents)
         else:
             downloaded_file = download_file(url)
-            page_content = get_file_content(content_subtype, downloaded_file)
+            page_content = await get_file_content(content_subtype, downloaded_file)
 
         results = ai_read_data(description, page_content)
         
@@ -272,7 +272,7 @@ class FileGetByLocationTool(BaseTool):
                 if file.name==file_location:
                     file_type = ''.join(pathlib.Path(file.name).suffixes)
                     saved_file_location = save_file(data)
-                    content = get_file_content(saved_file_location, file_type)
+                    content = await get_file_content(saved_file_location, file_type)
                     return ai_read_data(description, content)
 
 #File list tool
