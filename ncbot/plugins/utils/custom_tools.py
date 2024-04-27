@@ -17,7 +17,6 @@ import re
 import os
 import nc_py_api
 import pathlib
-import markdown
 
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
