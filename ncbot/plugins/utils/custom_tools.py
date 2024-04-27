@@ -274,8 +274,8 @@ class FileGetByLocationTool(BaseTool):
     ) -> str:
         """Use the tool asynchronously."""
         user_shared_files = []
-        for share in nc.files.sharing.get_list(shared_with_me=True):
-            if share.file_owner==username:
+        for share in self.nc.files.sharing.get_list(shared_with_me=True):
+            if share.file_owner==self.username:
                 user_shared_files.append(share)
         for share in user_shared_files:
             if share.path==file_location:
