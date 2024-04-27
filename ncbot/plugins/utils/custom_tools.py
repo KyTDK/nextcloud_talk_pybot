@@ -8,6 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders.word_document import Docx2txtLoader
 from langchain_community.document_loaders.pdf import PyPDFLoader
+from langchain_community.document_loaders import UnstructuredODTLoader
 
 import urllib.request
 from typing import Dict, Optional, Tuple, Type, List, Any, Union
@@ -147,8 +148,12 @@ async def get_file_content(location, file_type):
         loader = PyPDFLoader(location)
         data = await loader.aload()
         data = documents_to_content(data)
-    elif(file_type=="vnd.openxmlformats-officedocument.wordprocessingml.document" or file_type==".docx" or file_type==".odt"):
+    elif(file_type=="vnd.openxmlformats-officedocument.wordprocessingml.document" or file_type==".docx"):
         loader = Docx2txtLoader(location)
+        data = await loader.aload()
+        data = documents_to_content(data)
+    elif(file_type==".odt"):
+        loader = UnstructuredODTLoader(location, mode="elements")
         data = await loader.aload()
         data = documents_to_content(data)
     elif(file_type==".txt"):
@@ -157,12 +162,9 @@ async def get_file_content(location, file_type):
             # Read the entire content of the file
             data = file.read()
     elif(file_type==".md"):
-        with open(location, 'r') as f:
-            markdown_string = f.read()
-            html_string = markdown.markdown(markdown_string)
-            bs_transformer = BeautifulSoupTransformer()
-            data = bs_transformer.transform_documents(html_string, remove_lines=True, remove_comments=True)
-            data = documents_to_content(data)
+        loader = UnstructuredMarkdownLoader(location)
+        data = await loader.aload()
+        data = documents_to_content(data)
     else:
         return "Document not supported"
     return data
