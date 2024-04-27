@@ -16,3 +16,4 @@ pypdf
 docx2txt
 nc_py_api
 unstructured
+python-docx
