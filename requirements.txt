@@ -18,3 +18,4 @@ nc_py_api
 unstructured
 python-docx
 pypandoc
+markdown
