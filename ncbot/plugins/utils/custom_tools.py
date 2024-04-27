@@ -285,7 +285,7 @@ class FileGetByLocationTool(BaseTool):
                 saved_file_location = save_file(data)
                 content = await get_file_content(saved_file_location, file_type)
                 return ai_read_data(description, content)
-        return "That file doesn't exist, available files are :" + str(get_shared_files_paths(self.username, self.nc))
+        return "That file doesn't exist. You most likely tried to access the file with its name, rather than its path. Please try again with using the following paths to access the file. " + str(get_shared_files_paths(self.username, self.nc))
         
 #File list tool
 
