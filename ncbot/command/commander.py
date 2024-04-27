@@ -1,11 +1,9 @@
-from ncbot.nc_helper import NCHelper
 from ncbot.nc_chat import NCChat
 
 import os
 import importlib.util
 import traceback
 
-nc_agent = NCHelper()
 
 current_command = {}
 
@@ -94,7 +92,6 @@ def save_last_command(chat: NCChat, command: Command):
 
 async def dispatch(chat: NCChat):
     ret = 'test'
-    #nc_agent.lock_conversation(chat.conversation_token)
 
     find_last_command(chat)
     command = Command(chat)
@@ -105,7 +102,6 @@ async def dispatch(chat: NCChat):
         ret = get_plugin_desc(command.plname)
     else:
         ret = get_default_desc()
-    #nc_agent.unlock_conversation(chat.conversation_token)
     chat.response = ret
 
 
