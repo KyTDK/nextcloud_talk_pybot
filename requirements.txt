@@ -17,5 +17,5 @@ docx2txt
 nc_py_api
 unstructured
 python-docx
-pypandoc
 markdown
+pypandoc_binary
