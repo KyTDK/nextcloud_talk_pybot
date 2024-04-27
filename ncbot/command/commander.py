@@ -47,7 +47,7 @@ class Command:
 
     async def execute(self):
         try:
-            return await self.func(self.conversation_token, self.user_name, self.value)
+            return await self.func(self.conversation_token, self.user_name, self.user_id ,self.value)
         except Exception as e:
             # Use traceback.format_exc() to get the stack trace as a string
             stack_trace = traceback.format_exc()
