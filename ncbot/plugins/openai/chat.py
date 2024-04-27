@@ -26,7 +26,7 @@ llm_gpt3 = ChatOpenAI(model_name=model_gpt_3)
 
 reset=False
 
-nc = nc_py_api.Nextcloud(nextcloud_url="http://cloud.neomechanical.com", nc_auth_user=ncconfig.cf.username, nc_auth_pass=ncconfig.cf.username)
+nc = nc_py_api.Nextcloud(nextcloud_url="http://cloud.neomechanical.com", nc_auth_user=ncconfig.cf.username, nc_auth_pass=ncconfig.cf.password)
 
 def set_reset(value):
   global reset  # Use `global` to access a variable from the enclosing scope
@@ -50,7 +50,7 @@ async def chat3(conversation_token, username, input):
     list_files = FileListTool()
     list_files.username = username
     list_files.nc = nc
-    
+
     tools = [
         Tool(
             name='PubMed',
