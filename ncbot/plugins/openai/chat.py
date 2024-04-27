@@ -34,7 +34,7 @@ def set_reset(value):
 
 
 @base.command(plname=plugin_name, funcname='chat3', desc='Chat with Chatgpt using gpt-3.5-turbo model')
-async def chat3(conversation_token, fullname, input):
+async def chat3(conversation_token, fullname, username, input):
     history_util = get_instance()
     history = history_util.get_memory(
         conversation_token).load_memory_variables({})['history']
@@ -44,11 +44,11 @@ async def chat3(conversation_token, fullname, input):
     search = SearchTool()
 
     get_files_by_location = FileGetByLocationTool()
-    get_files_by_location.username = fullname
+    get_files_by_location.username = username
     get_files_by_location.nc = nc
 
     list_files = FileListTool()
-    list_files.username = fullname
+    list_files.username = username
     list_files.nc = nc
 
     tools = [
