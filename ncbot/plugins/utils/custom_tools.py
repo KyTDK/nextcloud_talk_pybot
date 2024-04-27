@@ -238,6 +238,14 @@ class SearchTool(BaseTool):
         search = SearxSearchWrapper(searx_host="http://localhost:8888")
         return search.results(query, num_results=num_results)
 
+def get_shared_files(username: str, nc: nc_py_api.Nextcloud):
+    all_shares = nc.files.sharing.get_list(shared_with_me=True)
+    user_shared_files = []
+    for share in all_shares:
+        if share.file_owner==username:
+            user_shared_files.append(share.path)
+    return user_shared_files
+
 #File get tool
 
 class FileGetByLocationInput(BaseModel):
@@ -276,7 +284,8 @@ class FileGetByLocationTool(BaseTool):
                     saved_file_location = save_file(data)
                     content = await get_file_content(saved_file_location, file_type)
                     return ai_read_data(description, content)
-
+        return "That file doesn't exist, available files are :"+get_shared_files(username, nc)
+        
 #File list tool
 
 class FileListTool(BaseTool):
@@ -301,9 +310,4 @@ class FileListTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Use the tool asynchronously."""
-        all_shares = self.nc.files.sharing.get_list(shared_with_me=True)
-        user_shared_files = []
-        for share in all_shares:
-            if share.file_owner==self.username:
-                user_shared_files.append(share.path)
-        return user_shared_files
+        return get_shared_files(username, nc)
