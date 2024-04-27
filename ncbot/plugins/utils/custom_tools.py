@@ -9,6 +9,7 @@ from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders.word_document import Docx2txtLoader
 from langchain_community.document_loaders.pdf import PyPDFLoader
 from langchain_community.document_loaders import UnstructuredODTLoader
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
 
 import urllib.request
 from typing import Dict, Optional, Tuple, Type, List, Any, Union
