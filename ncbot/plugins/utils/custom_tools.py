@@ -144,7 +144,7 @@ async def documents_to_content(documents):
     return page_content
 
 async def get_file_content(location, file_type):
-    if(file_type=="pdf"):
+    if(file_type=="pdf" or file_type==".pdf"):
         loader = PyPDFLoader(location)
         data = await loader.aload()
         data = documents_to_content(data)
