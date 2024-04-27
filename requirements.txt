@@ -14,5 +14,5 @@ beautifulsoup4
 playwright
 pypdf
 docx2txt
-markdown
 nc_py_api
+unstructured
