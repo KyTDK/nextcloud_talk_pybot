@@ -22,7 +22,7 @@ from ncbot.plugins.utils.custom_agent_maker import create_openai_tools_agent
 plugin_name = 'openai'
 model_gpt_3 = 'gpt-3.5-turbo-0125'
 
-llm_gpt3 = ChatOpenAI(model_name=model_gpt_3)
+llm_gpt3 = ChatOpenAI(model_name=model_gpt_3, temperature=0.5)
 
 reset=False
 

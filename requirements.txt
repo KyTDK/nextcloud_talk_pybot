@@ -19,3 +19,4 @@ unstructured
 python-docx
 markdown
 pypandoc_binary
+ngram

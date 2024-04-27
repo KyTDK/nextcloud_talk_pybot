@@ -18,6 +18,7 @@ import re
 import os
 import nc_py_api
 import pathlib
+import ngram
 
 from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
@@ -277,15 +278,22 @@ class FileGetByLocationTool(BaseTool):
         for share in self.nc.files.sharing.get_list(shared_with_me=True):
             if share.file_owner==self.username:
                 user_shared_files.append(share)
+                
+        result_path = None
+        max_similarity = 0.0  # Initialize maximum similarity
         for share in user_shared_files:
-            if share.path==file_location:
-                file = self.nc.files.by_path(share.path)
-                data = self.nc.files.download(share.path)
-                file_type = ''.join(pathlib.Path(file.name).suffixes)
-                saved_file_location = save_file(data)
-                content = await get_file_content(saved_file_location, file_type)
-                return ai_read_data(description, content)
-        return "That file doesn't exist. You most likely tried to access the file with its name, rather than its path. Please try again with using the following paths to access the file. " + str(get_shared_files_paths(self.username, self.nc))
+            similarity = ngram.NGram.compare(file_location, share.path)
+            if similarity > max_similarity and similarity>0.01:
+                max_similarity = similarity
+                result_path = share.path
+        if result_path:
+            file = self.nc.files.by_path(result_path)
+            data = self.nc.files.download(result_path)
+            file_type = ''.join(pathlib.Path(file.name).suffixes)
+            saved_file_location = save_file(data)
+            content = await get_file_content(saved_file_location, file_type)
+            return ai_read_data(description, content)
+        return "No results found, try again with one of the following " + str(get_shared_files_paths(self.username, self.nc))
         
 #File list tool
 
