@@ -12,14 +12,14 @@ import asyncio
 nc_agent = NCHelper()
 
 # Set to store processed chat IDs
-last_processed_chats = []
+processed_chats = []
 
 def run_async_task(chatC):
     # Run the asynchronous function within a separate thread
     asyncio.run(deal_unread_chat(chatC))
 
 def start():
-    global last_processed_chats  # Declare global variable
+    global processed_chats  # Declare global variable
     while True:
         try:
             unread_chats = []
@@ -41,7 +41,8 @@ def start():
                 unread_chats = sorted(unread_chats, key=lambda x: x['id'])
 
                 for chat in unread_chats:
-                    if chat not in last_processed_chats:
+                    if chat not in processed_chats:
+                        processed_chats.append(chat)
                         chatC = NCChat(chat)
                         thread = threading.Thread(target=run_async_task, args=(chatC,))
                         thread.daemon = True
