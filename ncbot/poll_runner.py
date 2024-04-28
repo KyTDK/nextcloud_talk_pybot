@@ -43,7 +43,7 @@ def start():
                 if last_processed_chats!=unread_chats:
                     for chat in unread_chats:
                         chatC = NCChat(chat)
-                        thread = threading.Thread(target=run_async_task(chatC))
+                        thread = threading.Thread(target=run_async_task, args=(chatC,))
                         thread.daemon = True
                         thread.start()
                     last_processed_chats=unread_chats
