@@ -34,16 +34,13 @@ def start():
                 unread_chats += chats
                 logger.debug(
                     f'found {len(chats)} unread chats from token {conversation["token"]}')
-                
-                for chat in sorted(unread_chats, key=lambda x: x['id']):
-                    chatC = NCChat(chat)
-                    nc_agent.mark_chat_read(chatC.conversation_token, chatC.chat_id)
-                unread_chats = sorted(unread_chats, key=lambda x: x['id'])
 
                 for chat in unread_chats:
                     chatC = NCChat(chat)
                     if chatC.conversation_token not in pending_chats:
+                        nc_agent.mark_chat_read(chatC.conversation_token, chatC.chat_id)
                         pending_chats.append(chatC.conversation_token)
+                        print("Starting thread for "+chatC.user_id)
                         thread = threading.Thread(target=run_async_task, args=(chatC,))
                         thread.daemon = True
                         thread.start()
