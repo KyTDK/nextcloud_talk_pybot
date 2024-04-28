@@ -64,7 +64,7 @@ async def deal_unread_chat(chatC):
             await commander.dispatch(chatC)
             nc_agent.send_message(chatC.conversation_token, chatC.chat_id,
                                     chatC.response, chatC.chat_message, chatC.user_id, False)
-            pending_chats.remove(chatC.conversation_token)
+            pending_chats.pop(chatC.conversation_token, None)
         except Exception as e:
             traceback.print_exc()
             logger.error(e)
