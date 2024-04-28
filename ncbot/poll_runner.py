@@ -43,7 +43,7 @@ def start():
                         thread = threading.Thread(target=run_async_task, args=(chatC,))
                         thread.daemon = True
                         thread.start()
-                    else:
+                    # else:
                         #Queue message if its not a repeat
                         # if pending_chats[chatC.conversation_token] != chatC:
                         #     unread_chats.append(chatC)
