@@ -49,7 +49,6 @@ def start():
                         thread.start()
                     else:
                         print("Tried processing same messages more than one, skipping... ("+str(chat)+")")
-                last_processed_chats=unread_chats
                 
         except Exception as e:
             traceback.print_exc()
