@@ -1,3 +1,4 @@
+import threading
 import time
 from ncbot.nc_helper import NCHelper
 import traceback
@@ -7,12 +8,18 @@ from ncbot.log_config import logger
 import ncbot.config as ncconfig
 import ncbot.nc_constants as ncconstants
 import asyncio
-import nc_py_api
 
 nc_agent = NCHelper()
 
-def start():
+# Set to store processed chat IDs
+last_processed_chats = []
 
+def run_async_task(unread_chats):
+    # Run the asynchronous function within a separate thread
+    asyncio.run(deal_unread_chats(unread_chats))
+
+def start():
+    global last_processed_chats  # Declare global variable
     while True:
         try:
             unread_chats = []
@@ -27,8 +34,14 @@ def start():
                 unread_chats += chats
                 logger.debug(
                     f'found {len(chats)} unread chats from token {conversation["token"]}')
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(deal_unread_chats(unread_chats))
+                for chat in sorted(unread_chats, key=lambda x: x['id']):
+                    chatC = NCChat(chat)
+                    nc_agent.mark_chat_read(chatC.conversation_token, chatC.chat_id)
+            if last_processed_chats!=unread_chats:
+                thread = threading.Thread(target=run_async_task(unread_chats))
+                thread.daemon = True
+                thread.start()
+                last_processed_chats=unread_chats
 
         except Exception as e:
             traceback.print_exc()
@@ -40,15 +53,10 @@ async def deal_unread_chats(unread_chats):
     unread_chats = sorted(unread_chats, key=lambda x: x['id'])
     for chat in unread_chats:
         chatC = NCChat(chat)
-        if chatC.user_id == ncconfig.cf.username:
-            nc_agent.mark_chat_read(chatC.conversation_token, chatC.chat_id)
-        else:
-            try:
-                nc_agent.mark_chat_read(
-                    chatC.conversation_token, chatC.chat_id)
-                await commander.dispatch(chatC)
-                nc_agent.send_message(chatC.conversation_token, chatC.chat_id,
-                                      chatC.response, chatC.chat_message, chatC.user_id, False)
-            except Exception as e:
-                traceback.print_exc()
-                logger.error(e)
+        try:
+            await commander.dispatch(chatC)
+            nc_agent.send_message(chatC.conversation_token, chatC.chat_id,
+                                    chatC.response, chatC.chat_message, chatC.user_id, False)
+        except Exception as e:
+            traceback.print_exc()
+            logger.error(e)
