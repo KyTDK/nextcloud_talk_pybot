@@ -12,14 +12,14 @@ import asyncio
 nc_agent = NCHelper()
 
 # Set to store processed chat IDs
-processed_chats = []
+pending_chats = []
 
 def run_async_task(chatC):
     # Run the asynchronous function within a separate thread
     asyncio.run(deal_unread_chat(chatC))
 
 def start():
-    global processed_chats  # Declare global variable
+    global pending_chats  # Declare global variable
     while True:
         try:
             unread_chats = []
@@ -41,14 +41,12 @@ def start():
                 unread_chats = sorted(unread_chats, key=lambda x: x['id'])
 
                 for chat in unread_chats:
-                    if chat not in processed_chats:
-                        processed_chats.append(chat)
-                        chatC = NCChat(chat)
+                    chatC = NCChat(chat)
+                    if chatC.conversation_token not in pending_chats:
+                        pending_chats.append(chatC.conversation_token)
                         thread = threading.Thread(target=run_async_task, args=(chatC,))
                         thread.daemon = True
                         thread.start()
-                    else:
-                        print("Tried processing same messages more than one, skipping... ("+str(chat)+")")
                 
         except Exception as e:
             traceback.print_exc()
@@ -57,10 +55,12 @@ def start():
 
 
 async def deal_unread_chat(chatC):
+    global pending_chats
     try:
         await commander.dispatch(chatC)
         nc_agent.send_message(chatC.conversation_token, chatC.chat_id,
                                 chatC.response, chatC.chat_message, chatC.user_id, False)
+        pending_chats.remove(chatC.conversation_token)
     except Exception as e:
         traceback.print_exc()
         logger.error(e)
