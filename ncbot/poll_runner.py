@@ -40,16 +40,16 @@ def start():
                     nc_agent.mark_chat_read(chatC.conversation_token, chatC.chat_id)
                 unread_chats = sorted(unread_chats, key=lambda x: x['id'])
 
-                if last_processed_chats!=unread_chats:
-                    for chat in unread_chats:
+                for chat in unread_chats:
+                    if chat not in last_processed_chats:
                         chatC = NCChat(chat)
                         thread = threading.Thread(target=run_async_task, args=(chatC,))
                         thread.daemon = True
                         thread.start()
-                    last_processed_chats=unread_chats
-                else:
-                    print("Tried processing same messages more than one, skipping...")
-
+                    else:
+                        print("Tried processing same messages more than one, skipping... ("+str(chat)+")")
+                last_processed_chats=unread_chats
+                
         except Exception as e:
             traceback.print_exc()
             logger.error(e)
