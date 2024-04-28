@@ -8,11 +8,12 @@ from ncbot.log_config import logger
 import ncbot.config as ncconfig
 import ncbot.nc_constants as ncconstants
 import asyncio
+from typing import Dict, Any
 
 nc_agent = NCHelper()
 
 # Set to store processed chat IDs
-pending_chats = []
+pending_chats: Dict[str, NCChat] = {}
 
 def run_async_task(chatC):
     # Run the asynchronous function within a separate thread
@@ -31,18 +32,21 @@ def start():
                     continue
                 chats = nc_agent.get_chat_list(
                     conversation['token'], conversation['unreadMessages'])
-                unread_chats += chats
+                unread_chats = [NCChat(chat) for chat in chats]
                 logger.debug(
                     f'found {len(chats)} unread chats from token {conversation["token"]}')
 
-                for chat in unread_chats:
-                    chatC = NCChat(chat)
+                for chatC in unread_chats:
                     if chatC.conversation_token not in pending_chats:
-                        pending_chats.append(chatC.conversation_token)
-                        print("Starting thread for "+chatC.user_id)
+                        pending_chats[chatC.conversation_token] = chatC
+                        #Start thread to handle message
                         thread = threading.Thread(target=run_async_task, args=(chatC,))
                         thread.daemon = True
                         thread.start()
+                    else:
+                        #Queue message if its not a repeat
+                        if pending_chats[chatC.conversation_token] != chatC:
+                            unread_chats.append(chatC)
                 
         except Exception as e:
             traceback.print_exc()

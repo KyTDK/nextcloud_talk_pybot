@@ -9,7 +9,6 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory, ChatMessageHistory
 
 
-from langchain_community.utilities.pubmed import PubMedAPIWrapper
 from langchain_experimental.utilities import PythonREPL
 
 
@@ -38,7 +37,6 @@ async def chat3(conversation_token, username, user_id, input):
     history_util = get_instance()
     history = history_util.get_memory(
         conversation_token).load_memory_variables({})['history']
-    pubmed = PubMedAPIWrapper()
     python_repl = PythonREPL()
     scrape = ScrapeTool()
     search = SearchTool()
@@ -52,11 +50,6 @@ async def chat3(conversation_token, username, user_id, input):
     list_files.nc = nc
 
     tools = [
-        Tool(
-            name='PubMed',
-            func=pubmed.run, 
-            description='Useful tool for querying medical publications'
-        ),
         Tool(
             name="datetime",
             func=lambda x: datetime.now().isoformat(),

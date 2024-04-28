@@ -190,18 +190,20 @@ class ScrapeTool(BaseTool):
     ) -> str:
         """Use the tool asynchronously."""
         #Get document type
-        with urllib.request.urlopen(url) as response:
-            content_subtype = response.info().get_content_subtype()
-        if(content_subtype=="html"):
-            loader = AsyncChromiumLoader([url])
-            html = await loader.aload()
-            bs_transformer = BeautifulSoupTransformer()
-            documents = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)
-            page_content = await documents_to_content(documents)
-        else:
-            downloaded_file = download_file(url)
-            page_content = await get_file_content(content_subtype, downloaded_file)
-
+        try:
+            with urllib.request.urlopen(url) as response:
+                content_subtype = response.info().get_content_subtype()
+            if(content_subtype=="html"):
+                loader = AsyncChromiumLoader([url])
+                html = await loader.aload()
+                bs_transformer = BeautifulSoupTransformer()
+                documents = bs_transformer.transform_documents(html, remove_lines=True, remove_comments=True)
+                page_content = await documents_to_content(documents)
+            else:
+                downloaded_file = download_file(url)
+                page_content = await get_file_content(content_subtype, downloaded_file)
+        except Exception as e:
+            page_content = "An error occured. Either the website doesn't allow scraping, or it is currently down."
         results = ai_read_data(description, page_content)
         
         return results
