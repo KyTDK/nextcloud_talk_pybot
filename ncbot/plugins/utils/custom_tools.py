@@ -115,7 +115,7 @@ def ai_read_data(description, content):
     
     text_splitter = TokenTextSplitter(
         # Controls the size of each chunk
-        chunk_size=2000,
+        chunk_size=1000,
         # Controls overlap between chunks
         chunk_overlap=20,
     )
