@@ -46,7 +46,9 @@ def start():
                         thread = threading.Thread(target=run_async_task(chatC))
                         thread.daemon = True
                         thread.start()
-                        last_processed_chats=unread_chats
+                    last_processed_chats=unread_chats
+                else:
+                    print("Tried processing same messages more than one, skipping...")
 
         except Exception as e:
             traceback.print_exc()
