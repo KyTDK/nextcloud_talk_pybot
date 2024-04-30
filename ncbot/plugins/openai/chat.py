@@ -16,7 +16,7 @@ from datetime import datetime
 import nc_py_api
 import ncbot.config as ncconfig
 
-from ncbot.plugins.utils.custom_agent_maker import create_openai_tools_agent
+from ncbot.plugins.utils.custom_agent_maker import create_tool_calling_agent
 
 plugin_name = 'openai'
 model_gpt_3 = 'gpt-3.5-turbo-0125'
@@ -85,7 +85,7 @@ async def chat3(conversation_token, username, user_id, input):
             MessagesPlaceholder("agent_scratchpad"),
         ])
     # Construct the OpenAI Tools agent
-    agent = create_openai_tools_agent(llm_gpt3, tools, prompt)
+    agent = create_tool_calling_agent(llm_gpt3, tools, prompt)
     # Create an agent executor by passing in the agent and tools
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = await agent_executor.ainvoke({"input": input, "history": history}, verbose=True)
