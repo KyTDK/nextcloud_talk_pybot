@@ -4,15 +4,16 @@ from langchain_core.language_models import BaseLanguageModel
 from langchain_core.prompts.chat import ChatPromptTemplate
 from langchain_core.runnables import Runnable, RunnablePassthrough
 from langchain_core.tools import BaseTool
-from langchain_core.utils.function_calling import convert_to_openai_tool
-from langchain_core.prompt_values import ChatPromptValue
+
 from langchain_openai import ChatOpenAI
-from langchain_core.messages.base import BaseMessage
-from langchain.agents.format_scratchpad.openai_tools import (
-    format_to_openai_tool_messages,
-)
 from langchain_core.messages.tool import ToolMessage
-from langchain.agents.output_parsers.openai_tools import OpenAIToolsAgentOutputParser
+from langchain_core.prompt_values import ChatPromptValue
+from langchain_core.messages.base import BaseMessage
+
+from langchain.agents.format_scratchpad.tools import (
+    format_to_tool_messages,
+)
+from langchain.agents.output_parsers.tools import ToolsAgentOutputParser
 
 TOKEN_LIMIT = 4000
 
@@ -28,11 +29,10 @@ def condense_prompt(prompt: ChatPromptValue) -> ChatPromptValue:
         messages.append(last_message)
     return ChatPromptValue(messages=messages)
 
-
-def create_openai_tools_agent(
+def create_tool_calling_agent(
     llm: BaseLanguageModel, tools: Sequence[BaseTool], prompt: ChatPromptTemplate
 ) -> Runnable:
-    """Create an agent that uses OpenAI tools.
+    """Create an agent that uses tools.
 
     Args:
         llm: LLM to use as the agent.
@@ -49,18 +49,31 @@ def create_openai_tools_agent(
 
         .. code-block:: python
 
-            from langchain import hub
-            from langchain_community.chat_models import ChatOpenAI
-            from langchain.agents import AgentExecutor, create_openai_tools_agent
+            from langchain.agents import AgentExecutor, create_tool_calling_agent, tool
+            from langchain_anthropic import ChatAnthropic
+            from langchain_core.prompts import ChatPromptTemplate
 
-            prompt = hub.pull("hwchase17/openai-tools-agent")
-            model = ChatOpenAI()
-            tools = ...
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    ("system", "You are a helpful assistant"),
+                    ("placeholder", "{chat_history}",
+                    ("human", "{input}"),
+                    ("placeholder", "{agent_scratchpad}"),
+                ]
+            )
+            model = ChatAnthropic(model="claude-3-opus-20240229")
 
-            agent = create_openai_tools_agent(model, tools, prompt)
-            agent_executor = AgentExecutor(agent=agent, tools=tools)
+            @tool
+            def magic_function(input: int) -> int:
+                \"\"\"Applies a magic function to an input.\"\"\"
+                return input + 2
 
-            agent_executor.invoke({"input": "hi"})
+            tools = [magic_function]
+
+            agent = create_tool_calling_agent(model, tools, prompt)
+            agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+            agent_executor.invoke({"input": "what is the value of magic_function(3)?"})
 
             # Using with chat history
             from langchain_core.messages import AIMessage, HumanMessage
@@ -79,36 +92,26 @@ def create_openai_tools_agent(
         The agent prompt must have an `agent_scratchpad` key that is a
             ``MessagesPlaceholder``. Intermediate agent actions and tool output
             messages will be passed in here.
-
-        Here's an example:
-
-        .. code-block:: python
-
-            from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-            prompt = ChatPromptTemplate.from_messages(
-                [
-                    ("system", "You are a helpful assistant"),
-                    MessagesPlaceholder("chat_history", optional=True),
-                    ("human", "{input}"),
-                    MessagesPlaceholder("agent_scratchpad"),
-                ]
-            )
     """
-    missing_vars = {"agent_scratchpad"}.difference(prompt.input_variables)
+    missing_vars = {"agent_scratchpad"}.difference(
+        prompt.input_variables + list(prompt.partial_variables)
+    )
     if missing_vars:
         raise ValueError(f"Prompt missing required variables: {missing_vars}")
 
-    llm_with_tools = llm.bind(tools=[convert_to_openai_tool(tool) for tool in tools])
+    if not hasattr(llm, "bind_tools"):
+        raise ValueError(
+            "This function requires a .bind_tools method be implemented on the LLM.",
+        )
+    llm_with_tools = llm.bind_tools(tools)
+
     agent = (
         RunnablePassthrough.assign(
-            agent_scratchpad=lambda x: format_to_openai_tool_messages(
-                x["intermediate_steps"]
-            )
+            agent_scratchpad=lambda x: format_to_tool_messages(x["intermediate_steps"])
         )
         | prompt
         | condense_prompt
         | llm_with_tools
-        | OpenAIToolsAgentOutputParser()
+        | ToolsAgentOutputParser()
     )
     return agent
