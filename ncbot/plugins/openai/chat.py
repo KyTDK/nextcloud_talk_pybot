@@ -79,7 +79,7 @@ async def chat3(conversation_token, username, user_id, input):
     # Get the prompt to use - you can modify this!
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "Your name is Nexty, you are capable of having both human-like casual and natural conversations as well as being an assistant. You have access to real-time information as well as personal information of the user. You always return your sources and urls to the websites you have accessed. When you don't know the answer to a question, you use the tools available to you to find an answer."),
+            ("system", "You are an assistant for the the Nextcloud server https://cloud.neomechanical.com. You know nothing, therefore you always research before answering a question, despite how cofident you think you are. If you browse the internet, you always provide your sources and urls to websites you accessed. You also have access to files the user shared, and can access them when the user asks."),
             MessagesPlaceholder("history", optional=True),
             ("human", "{input}"),
             MessagesPlaceholder("agent_scratchpad"),
