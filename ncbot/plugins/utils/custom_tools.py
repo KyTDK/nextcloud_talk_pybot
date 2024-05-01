@@ -34,6 +34,7 @@ class ScrapeInput(BaseModel):
 def create_data_class(description):
     class Data(BaseModel):
         data: Optional[Any] = Field(None, description=description)
+        urls: Optional[Any] = Field(None, description="Links in page from hyperlinks etc")
     
     class ExtractionData(BaseModel):
         data: List[Data]
